@@ -1,0 +1,118 @@
+format version: 5
+output mode:
+1 items
+0 -> single
+output directories:
+1 items
+output dir -> /Users/hover/opensrc/delta/project/target/scala-2.10/sbt-0.13/classes
+compile options:
+1 items
+0 -> -deprecation
+javac options:
+0 items
+compiler version:
+1 items
+0 -> 2.10.7
+compile order:
+1 items
+0 -> Mixed
+name hashing:
+1 items
+0 -> true
+products:
+2 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> /Users/hover/opensrc/delta/project/target/scala-2.10/sbt-0.13/classes/MimaExcludes$.class
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> /Users/hover/opensrc/delta/project/target/scala-2.10/sbt-0.13/classes/MimaExcludes.class
+binary dependencies:
+3 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> /Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/jre/lib/rt.jar
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> /Users/hover/.sbt/boot/scala-2.10.7/lib/scala-library.jar
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> /Users/hover/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/com/typesafe/mima-core_2.10/0.3.0/mima-core_2.10-0.3.0.jar
+direct source dependencies:
+0 items
+direct external dependencies:
+0 items
+public inherited source dependencies:
+0 items
+public inherited external dependencies:
+0 items
+member reference internal dependencies:
+0 items
+member reference external dependencies:
+0 items
+inheritance internal dependencies:
+0 items
+inheritance external dependencies:
+0 items
+class names:
+2 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> MimaExcludes
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> MimaExcludes$
+used names:
+36 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> <init>
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> <repeated>
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> A
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Any
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> AnyRef
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Class
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> ClassTag
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> DirectMissingMethodProblem
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> IncompatibleMethTypeProblem
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> IncompatibleResultTypeProblem
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> MimaExcludes
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> MissingTypesProblem
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Nothing
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Object
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> P
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Predef
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Problem
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> ProblemFilter
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> ProblemFilters
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> ProblemRef
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> Seq
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> String
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> T
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> _$6
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> apply
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> collection
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> com
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> core
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> exclude
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> ignoredABIProblems
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> materializeClassTag
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> mima
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> package
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> scala
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> tools
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> typesafe
+product stamps:
+2 items
+/Users/hover/opensrc/delta/project/target/scala-2.10/sbt-0.13/classes/MimaExcludes$.class -> lastModified(1605513463000)
+/Users/hover/opensrc/delta/project/target/scala-2.10/sbt-0.13/classes/MimaExcludes.class -> lastModified(1605513463000)
+source stamps:
+1 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> hash(55dffd3427d6e9e947935e9468407ee40f0a2622)
+binary stamps:
+3 items
+/Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/jre/lib/rt.jar -> lastModified(1504666619000)
+/Users/hover/.sbt/boot/scala-2.10.7/lib/scala-library.jar -> lastModified(1509739617000)
+/Users/hover/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/com/typesafe/mima-core_2.10/0.3.0/mima-core_2.10-0.3.0.jar -> lastModified(1527071579000)
+class names:
+3 items
+/Library/Java/JavaVirtualMachines/jdk1.8.0_151.jdk/Contents/Home/jre/lib/rt.jar -> java.lang.Object
+/Users/hover/.sbt/boot/scala-2.10.7/lib/scala-library.jar -> scala.collection.generic.GenericCompanion
+/Users/hover/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/com/typesafe/mima-core_2.10/0.3.0/mima-core_2.10-0.3.0.jar -> com.typesafe.tools.mima.core.package$
+internal apis:
+1 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlSjH5SdlLSkQCAAdJAAdhcGlIYXNoWgAIaGFzTWFjcm9aABBoYXNQYWNrYWdlT2JqZWN0TAAYX2ludGVybmFsT25seV9uYW1lSGFzaGVzdAAkTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoZXM7TAADYXBpdAAVTHhzYnRpL2FwaS9Tb3VyY2VBUEk7TAALY29tcGlsYXRpb250ABdMeHNidGkvYXBpL0NvbXBpbGF0aW9uO1sABGhhc2h0AAJbQnhwaqhklAAAc3IAInhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoZXNU2r6Z+tTsTAIAAlsAD2ltcGxpY2l0TWVtYmVyc3QAI1tMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2g7WwAOcmVndWxhck1lbWJlcnNxAH4AB3hwdXIAI1tMeHNidGkuYXBpLl9pbnRlcm5hbE9ubHlfTmFtZUhhc2g7SVqAtt2Wi/QCAAB4cAAAAAB1cQB+AAkAAAAVc3IAIHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoWw71InY4V88CAAJJAARoYXNoTAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hw4fvAn3QAEmlnbm9yZWRBQklQcm9ibGVtc3NxAH4ADBmZ2+R0AAZub3RpZnlzcQB+AAxFCRZpdAAEd2FpdHNxAH4ADO8AY310AA0kYXNJbnN0YW5jZU9mc3EAfgAMssgOFnQABmVxdWFsc3NxAH4ADCL1Y8N0AAxhc0luc3RhbmNlT2ZzcQB+AAx1UV20dAAMc3luY2hyb25pemVkc3EAfgAMuXiTmnQADSRpc0luc3RhbmNlT2ZzcQB+AAzsfdEWdAAMTWltYUV4Y2x1ZGVzc3EAfgAMOBJ943QACW5vdGlmeUFsbHNxAH4ADI8wFe50AAxpc0luc3RhbmNlT2ZzcQB+AAxcS8f7dAACPT1zcQB+AAxNHxxxdAAFY2xvbmVzcQB+AAz20p9HdAAIdG9TdHJpbmdzcQB+AAz2KretdAACIT1zcQB+AAwKHwnvdAAIZ2V0Q2xhc3NzcQB+AAwy7UN1dAACbmVzcQB+AAzFFDk8dAACZXFzcQB+AAzlYtDidAACIyNzcQB+AAz0W4R8dAAIZmluYWxpemVzcQB+AAwZbVJPdAAIaGFzaENvZGVzcgATeHNidGkuYXBpLlNvdXJjZUFQSblep/kpIzikAgACWwALZGVmaW5pdGlvbnN0ABdbTHhzYnRpL2FwaS9EZWZpbml0aW9uO1sACHBhY2thZ2VzdAAUW0x4c2J0aS9hcGkvUGFja2FnZTt4cHVyABdbTHhzYnRpLmFwaS5EZWZpbml0aW9uO4jJXOe0414OAgAAeHAAAAABc3IAE3hzYnRpLmFwaS5DbGFzc0xpa2WDNByh37CXbAIABEwADmRlZmluaXRpb25UeXBldAAaTHhzYnRpL2FwaS9EZWZpbml0aW9uVHlwZTtbABBzYXZlZEFubm90YXRpb25zdAATW0xqYXZhL2xhbmcvU3RyaW5nO0wACHNlbGZUeXBldAAQTHhzYnRpL2FwaS9MYXp5O0wACXN0cnVjdHVyZXEAfgBBeHIAIXhzYnRpLmFwaS5QYXJhbWV0ZXJpemVkRGVmaW5pdGlvbvkRbrHVUDziAgABWwAOdHlwZVBhcmFtZXRlcnN0ABpbTHhzYnRpL2FwaS9UeXBlUGFyYW1ldGVyO3hyABR4c2J0aS5hcGkuRGVmaW5pdGlvbocqG+hxQuNGAgAETAAGYWNjZXNzdAASTHhzYnRpL2FwaS9BY2Nlc3M7WwALYW5ub3RhdGlvbnN0ABdbTHhzYnRpL2FwaS9Bbm5vdGF0aW9uO0wACW1vZGlmaWVyc3QAFUx4c2J0aS9hcGkvTW9kaWZpZXJzO0wABG5hbWVxAH4ADXhwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnOX52HcEyZ7swIAAUIABWZsYWdzeHAAcQB+AB91cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAAAc3IAIXhzYnRpLmFwaS5BYnN0cmFjdExhenkkU3RyaWN0TGF6eQ1mHGspFiq4AgABTAAFdmFsdWV0ABJMamF2YS9sYW5nL09iamVjdDt4cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AFhzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AQUwACWluaGVyaXRlZHEAfgBBTAAHcGFyZW50c3EAfgBBeHEAfgBdc3EAfgBYdXEAfgA8AAAAAHNxAH4AWHVxAH4APAAAAABzcQB+AFh1cgARW0x4c2J0aS5hcGkuVHlwZTt0/6Vae/npQQIAAHhwAAAAAnNyABR4c2J0aS5hcGkuUHJvamVjdGlvbvPSjVTpRaQtAgACTAACaWRxAH4ADUwABnByZWZpeHQAFkx4c2J0aS9hcGkvU2ltcGxlVHlwZTt4cQB+AFx0AAZPYmplY3RzcgATeHNidGkuYXBpLlNpbmdsZXRvbvynX/jPVuRGAgABTAAEcGF0aHQAEEx4c2J0aS9hcGkvUGF0aDt4cQB+AFxzcgAOeHNidGkuYXBpLlBhdGibPVwIzqUnhAIAAVsACmNvbXBvbmVudHN0ABpbTHhzYnRpL2FwaS9QYXRoQ29tcG9uZW50O3hwdXIAGltMeHNidGkuYXBpLlBhdGhDb21wb25lbnQ7Q9oJdC1nFnQCAAB4cAAAAANzcgAMeHNidGkuYXBpLklkmDJsizdTxEACAAFMAAJpZHEAfgANeHIAF3hzYnRpLmFwaS5QYXRoQ29tcG9uZW50X5oiWy6Gn7wCAAB4cHQABGphdmFzcQB+AHV0AARsYW5nc3IADnhzYnRpLmFwaS5UaGlz2wntpsxaQFwCAAB4cQB+AHZzcQB+AGl0AANBbnlzcQB+AG1zcQB+AHB1cQB+AHMAAAACc3EAfgB1dAAFc2NhbGFxAH4AfHVyABRbTHhzYnRpLmFwaS5QYWNrYWdlO1sTGTdwpyehAgAAeHAAAAAAc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAF10A7w4HVyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3RvcnlxAH4ADUwAD3NvdXJjZURpcmVjdG9yeXEAfgANeHB0AEUvVXNlcnMvaG92ZXIvb3BlbnNyYy9kZWx0YS9wcm9qZWN0L3RhcmdldC9zY2FsYS0yLjEwL3NidC0wLjEzL2NsYXNzZXN0AAEvdXIAAltCrPMX+AYIVOACAAB4cAAAABRV3/00J9bp6UeTXpRoQH7kDwomIg==
+external apis:
+0 items
+source infos:
+1 items
+/Users/hover/opensrc/delta/project/MimaExcludes.scala -> 
+AAAAAAAAAAA=
+compilations:
+1 items
+0 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABddAO8OB1cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAXNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQARS9Vc2Vycy9ob3Zlci9vcGVuc3JjL2RlbHRhL3Byb2plY3QvdGFyZ2V0L3NjYWxhLTIuMTAvc2J0LTAuMTMvY2xhc3Nlc3QAAS8=

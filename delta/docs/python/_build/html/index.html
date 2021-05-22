@@ -1,0 +1,735 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to Delta Lake’s Python documentation page &#8212; delta-core 0.4.1-SNAPSHOT documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">delta-core 0.4.1-SNAPSHOT documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-delta-lake-s-python-documentation-page">
+<h1>Welcome to Delta Lake’s Python documentation page<a class="headerlink" href="#welcome-to-delta-lake-s-python-documentation-page" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="module-delta.tables">
+<span id="deltatable"></span><h1>DeltaTable<a class="headerlink" href="#module-delta.tables" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="delta.tables.DeltaTable">
+<em class="property">class </em><code class="descclassname">delta.tables.</code><code class="descname">DeltaTable</code><span class="sig-paren">(</span><em>spark</em>, <em>jdt</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main class for programmatically interacting with Delta tables.
+You can create DeltaTable instances using the path of the Delta table.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span> <span class="o">=</span> <span class="n">DeltaTable</span><span class="o">.</span><span class="n">forPath</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="s2">&quot;/path/to/table&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In addition, you can convert an existing Parquet table in place into a Delta table.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span> <span class="o">=</span> <span class="n">DeltaTable</span><span class="o">.</span><span class="n">convertToDelta</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="s2">&quot;parquet.`/path/to/table`&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<dl class="method">
+<dt id="delta.tables.DeltaTable.toDF">
+<code class="descname">toDF</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.toDF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a DataFrame representation of this Delta table.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaTable.alias">
+<code class="descname">alias</code><span class="sig-paren">(</span><em>aliasName</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.alias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply an alias to the Delta table.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaTable.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>condition=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete data from the table that match the given <code class="docutils literal notranslate"><span class="pre">condition</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;date &lt; &#39;2017-01-01&#39;&quot;</span><span class="p">)</span>        <span class="c1"># predicate using SQL formatted string</span>
+
+<span class="n">deltaTable</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">col</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="s2">&quot;2017-01-01&quot;</span><span class="p">)</span>   <span class="c1"># predicate using Spark SQL functions</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – condition of the update</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaTable.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>condition=None</em>, <em>set=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update data from the table on the rows that match the given <code class="docutils literal notranslate"><span class="pre">condition</span></code>,
+which performs the rules defined by <code class="docutils literal notranslate"><span class="pre">set</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># condition using SQL formatted string</span>
+<span class="n">deltaTable</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="s2">&quot;eventType = &#39;clck&#39;&quot;</span><span class="p">,</span>
+    <span class="nb">set</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;eventType&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;click&#39;&quot;</span> <span class="p">}</span> <span class="p">)</span>
+
+<span class="c1"># condition using Spark SQL functions</span>
+<span class="n">deltaTable</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;eventType&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;clck&quot;</span><span class="p">,</span>
+    <span class="nb">set</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;eventType&quot;</span><span class="p">:</span> <span class="n">lit</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">)</span> <span class="p">}</span> <span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Optional condition of the update</li>
+<li><strong>set</strong> (<em>dict with str as keys and str</em><em> or </em><em>pyspark.sql.Column as values</em>) – Defines the rules of setting the values of columns that need to be updated.
+<em>Note: This param is required.</em> Default value None is present to allow
+positional args in same order across languages.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaTable.merge">
+<code class="descname">merge</code><span class="sig-paren">(</span><em>source</em>, <em>condition</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.merge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge data from the <cite>source</cite> DataFrame based on the given merge <cite>condition</cite>. This returns
+a <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> object that can be used to specify the update, delete, or
+insert actions to be performed on rows based on whether the rows matched the condition or
+not. See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for a full description of this operation and what
+combinations of update, delete and insert operations are allowed.</p>
+<p>Example 1 with conditions and update expressions as SQL formatted string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">updatesDF</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;updates&quot;</span><span class="p">),</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="s2">&quot;events.eventId = updates.eventId&quot;</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenMatchedUpdate</span><span class="p">(</span><span class="nb">set</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.data&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;events.count + 1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenNotMatchedInsert</span><span class="p">(</span><span class="n">values</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.date&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;eventId&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.eventId&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.data&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Example 2 with conditions and update expressions as Spark SQL functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">deltaTable</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">updatesDF</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;updates&quot;</span><span class="p">),</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">expr</span><span class="p">(</span><span class="s2">&quot;events.eventId = updates.eventId&quot;</span><span class="p">)</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenMatchedUpdate</span><span class="p">(</span><span class="nb">set</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;data&quot;</span> <span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.data&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;events.count&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenNotMatchedInsert</span><span class="p">(</span><span class="n">values</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.date&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;eventId&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.eventId&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.data&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">lit</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>source</strong> (<em>pyspark.sql.DataFrame</em>) – Source DataFrame</li>
+<li><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Condition to match sources rows with the Delta table rows.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">builder object to specify whether to update, delete or insert rows based on
+whether the condition matched or not</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">delta.tables.DeltaMergeBuilder</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaTable.vacuum">
+<code class="descname">vacuum</code><span class="sig-paren">(</span><em>retentionHours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.vacuum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively delete files and directories in the table that are not needed by the table for
+maintaining older versions up to the given retention threshold. This method will return an
+empty DataFrame on successful completion.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span><span class="o">.</span><span class="n">vacuum</span><span class="p">()</span>     <span class="c1"># vacuum files not required by versions more than 7 days old</span>
+
+<span class="n">deltaTable</span><span class="o">.</span><span class="n">vacuum</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># vacuum files not required by versions more than 100 hours old</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>retentionHours</strong> – Optional number of hours retain history. If not specified, then the
+default retention period of 168 hours (7 days) will be used.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaTable.history">
+<code class="descname">history</code><span class="sig-paren">(</span><em>limit=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.history" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the information of the latest <cite>limit</cite> commits on this table as a Spark DataFrame.
+The information is in reverse chronological order.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fullHistoryDF</span> <span class="o">=</span> <span class="n">deltaTable</span><span class="o">.</span><span class="n">history</span><span class="p">()</span>    <span class="c1"># get the full history of the table</span>
+
+<span class="n">lastOperationDF</span> <span class="o">=</span> <span class="n">deltaTable</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># get the last operation</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>limit</strong> – Optional, number of latest commits to returns in the history.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Table’s commit history. See the online Delta Lake documentation for more details.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pyspark.sql.DataFrame</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="delta.tables.DeltaTable.convertToDelta">
+<em class="property">classmethod </em><code class="descname">convertToDelta</code><span class="sig-paren">(</span><em>sparkSession</em>, <em>identifier</em>, <em>partitionSchema=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.convertToDelta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DeltaTable from the given parquet table. Takes an existing parquet table and
+constructs a delta transaction log in the base path of the table.
+Note: Any changes to the table during the conversion process may not result in a consistent
+state at the end of the conversion. Users should stop any changes to the table before the
+conversion is started.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert unpartitioned parquet table at path &#39;path/to/table&#39;</span>
+<span class="n">deltaTable</span> <span class="o">=</span> <span class="n">DeltaTable</span><span class="o">.</span><span class="n">convertToDelta</span><span class="p">(</span>
+    <span class="n">spark</span><span class="p">,</span> <span class="s2">&quot;parquet.`path/to/table`&quot;</span><span class="p">)</span>
+
+<span class="c1"># Convert partitioned parquet table at path &#39;path/to/table&#39; and partitioned by</span>
+<span class="c1"># integer column named &#39;part&#39;</span>
+<span class="n">partitionedDeltaTable</span> <span class="o">=</span> <span class="n">DeltaTable</span><span class="o">.</span><span class="n">convertToDelta</span><span class="p">(</span>
+    <span class="n">spark</span><span class="p">,</span> <span class="s2">&quot;parquet.`path/to/table`&quot;</span><span class="p">,</span> <span class="s2">&quot;part int&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sparkSession</strong> (<em>pyspark.sql.SparkSession</em>) – SparkSession to use for the conversion</li>
+<li><strong>identifier</strong> (<em>str</em>) – Parquet table identifier formatted as “parquet.`path`”</li>
+<li><strong>partitionSchema</strong> – </li>
+<li><strong>partitionSchema</strong> – Hive DDL formatted string, or pyspark.sql.types.StructType</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">DeltaTable representing the converted Delta table</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#delta.tables.DeltaTable" title="delta.tables.DeltaTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaTable</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="delta.tables.DeltaTable.forPath">
+<em class="property">classmethod </em><code class="descname">forPath</code><span class="sig-paren">(</span><em>sparkSession</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.forPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a DeltaTable for the data at the given <cite>path</cite> using the given SparkSession.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sparkSession</strong> (<em>pyspark.sql.SparkSession</em>) – SparkSession to use for loading the table</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">loaded Delta table</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#delta.tables.DeltaTable" title="delta.tables.DeltaTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaTable</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span> <span class="o">=</span> <span class="n">DeltaTable</span><span class="o">.</span><span class="n">forPath</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="s2">&quot;/path/to/table&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="delta.tables.DeltaTable.isDeltaTable">
+<em class="property">classmethod </em><code class="descname">isDeltaTable</code><span class="sig-paren">(</span><em>sparkSession</em>, <em>identifier</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaTable.isDeltaTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the provided <cite>identifier</cite> string, in this case a file path,
+is the root of a Delta table using the given SparkSession.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sparkSession</strong> – SparkSession to use to perform the check</li>
+<li><strong>path</strong> – location of the table</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">If the table is a delta table or not</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DeltaTable</span><span class="o">.</span><span class="n">isDeltaTable</span><span class="p">(</span><span class="n">spark</span><span class="p">,</span> <span class="s2">&quot;/path/to/table&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="delta.tables.DeltaMergeBuilder">
+<em class="property">class </em><code class="descclassname">delta.tables.</code><code class="descname">DeltaMergeBuilder</code><span class="sig-paren">(</span><em>spark</em>, <em>jbuilder</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builder to specify how to merge data from source DataFrame into the target Delta table.
+Use <a class="reference internal" href="#delta.tables.DeltaTable.merge" title="delta.tables.DeltaTable.merge"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delta.tables.DeltaTable.merge()</span></code></a> to create an object of this class.
+Using this builder, you can specify 1, 2 or 3 <code class="docutils literal notranslate"><span class="pre">when</span></code> clauses of which there can be at most
+2 <code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clauses and at most 1 <code class="docutils literal notranslate"><span class="pre">whenNotMatched</span></code> clause.
+Here are the constraints on these clauses.</p>
+<ul>
+<li><p class="first">Constraints in the <code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clauses:</p>
+<ul>
+<li><p class="first">There can be at most one <code class="docutils literal notranslate"><span class="pre">update</span></code> action and one <code class="docutils literal notranslate"><span class="pre">delete</span></code> action in <cite>whenMatched</cite>
+clauses.</p>
+</li>
+<li><p class="first">Each <code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clause can have an optional condition. However, if there are two
+<code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clauses, then the first one must have a condition.</p>
+</li>
+<li><p class="first">When there are two <code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clauses and there are conditions (or the lack of)
+such that a row matches both clauses, then the first clause/action is executed.
+In other words, the order of the <code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clauses matter.</p>
+</li>
+<li><p class="first">If none of the <code class="docutils literal notranslate"><span class="pre">whenMatched</span></code> clauses match a source-target row pair that satisfy
+the merge condition, then the target rows will not be updated or deleted.</p>
+</li>
+<li><p class="first">If you want to update all the columns of the target Delta table with the
+corresponding column of the source DataFrame, then you can use the
+<code class="docutils literal notranslate"><span class="pre">whenMatchedUpdateAll()</span></code>. This is equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">whenMatchedUpdate</span><span class="p">(</span><span class="nb">set</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="s2">&quot;source.col1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="s2">&quot;source.col2&quot;</span><span class="p">,</span>
+  <span class="o">...</span>    <span class="c1"># for all columns in the delta table</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p class="first">Constraints in the <code class="docutils literal notranslate"><span class="pre">whenNotMatched</span></code> clauses:</p>
+<ul>
+<li><p class="first">This clause can have only an <code class="docutils literal notranslate"><span class="pre">insert</span></code> action, which can have an optional condition.</p>
+</li>
+<li><p class="first">If <code class="docutils literal notranslate"><span class="pre">whenNotMatchedInsert</span></code> is not present or if it is present but the non-matching
+source row does not satisfy the condition, then the source row is not inserted.</p>
+</li>
+<li><p class="first">If you want to insert all the columns of the target Delta table with the
+corresponding column of the source DataFrame, then you can use
+<code class="docutils literal notranslate"><span class="pre">whenNotMatchedInsertAll()</span></code>. This is equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">whenMatchedInsert</span><span class="p">(</span><span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;col1&quot;</span><span class="p">:</span> <span class="s2">&quot;source.col1&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;col2&quot;</span><span class="p">:</span> <span class="s2">&quot;source.col2&quot;</span><span class="p">,</span>
+  <span class="o">...</span>    <span class="c1"># for all columns in the delta table</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+</ul>
+<p>Example 1 with conditions and update expressions as SQL formatted string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">deltaTable</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">updatesDF</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;updates&quot;</span><span class="p">),</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="s2">&quot;events.eventId = updates.eventId&quot;</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenMatchedUpdate</span><span class="p">(</span><span class="nb">set</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.data&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;events.count + 1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenNotMatchedInsert</span><span class="p">(</span><span class="n">values</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.date&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;eventId&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.eventId&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;updates.data&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Example 2 with conditions and update expressions as Spark SQL functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyspark.sql.functions</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">deltaTable</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;events&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">updatesDF</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s2">&quot;updates&quot;</span><span class="p">),</span>
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">expr</span><span class="p">(</span><span class="s2">&quot;events.eventId = updates.eventId&quot;</span><span class="p">)</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenMatchedUpdate</span><span class="p">(</span><span class="nb">set</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;data&quot;</span> <span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.data&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;events.count&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">whenNotMatchedInsert</span><span class="p">(</span><span class="n">values</span> <span class="o">=</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.date&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;eventId&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.eventId&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">col</span><span class="p">(</span><span class="s2">&quot;updates.data&quot;</span><span class="p">),</span>
+      <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">lit</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<dl class="method">
+<dt id="delta.tables.DeltaMergeBuilder.whenMatchedUpdate">
+<code class="descname">whenMatchedUpdate</code><span class="sig-paren">(</span><em>condition=None</em>, <em>set=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder.whenMatchedUpdate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a matched table row based on the rules defined by <code class="docutils literal notranslate"><span class="pre">set</span></code>.
+If a <code class="docutils literal notranslate"><span class="pre">condition</span></code> is specified, then it must evaluate to true for the row to be updated.</p>
+<p>See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for complete usage details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Optional condition of the update</li>
+<li><strong>set</strong> (<em>dict with str as keys and str</em><em> or </em><em>pyspark.sql.Column as values</em>) – Defines the rules of setting the values of columns that need to be updated.
+<em>Note: This param is required.</em> Default value None is present to allow
+positional args in same order across languages.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">this builder</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaMergeBuilder.whenMatchedUpdateAll">
+<code class="descname">whenMatchedUpdateAll</code><span class="sig-paren">(</span><em>condition=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder.whenMatchedUpdateAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update all the columns of the matched table row with the values of the  corresponding
+columns in the source row. If a <code class="docutils literal notranslate"><span class="pre">condition</span></code> is specified, then it must be
+true for the new row to be updated.</p>
+<p>See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for complete usage details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Optional condition of the insert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">this builder</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaMergeBuilder.whenMatchedDelete">
+<code class="descname">whenMatchedDelete</code><span class="sig-paren">(</span><em>condition=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder.whenMatchedDelete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a matched row from the table only if the given <code class="docutils literal notranslate"><span class="pre">condition</span></code> (if specified) is
+true for the matched row.</p>
+<p>See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for complete usage details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Optional condition of the delete</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">this builder</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaMergeBuilder.whenNotMatchedInsert">
+<code class="descname">whenNotMatchedInsert</code><span class="sig-paren">(</span><em>condition=None</em>, <em>values=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder.whenNotMatchedInsert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a new row to the target table based on the rules defined by <code class="docutils literal notranslate"><span class="pre">values</span></code>. If a
+<code class="docutils literal notranslate"><span class="pre">condition</span></code> is specified, then it must evaluate to true for the new row to be inserted.</p>
+<p>See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for complete usage details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Optional condition of the insert</li>
+<li><strong>values</strong> (<em>dict with str as keys and str</em><em> or </em><em>pyspark.sql.Column as values</em>) – Defines the rules of setting the values of columns that need to be updated.
+<em>Note: This param is required.</em> Default value None is present to allow
+positional args in same order across languages.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">this builder</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaMergeBuilder.whenNotMatchedInsertAll">
+<code class="descname">whenNotMatchedInsertAll</code><span class="sig-paren">(</span><em>condition=None</em><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder.whenNotMatchedInsertAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a new target Delta table row by assigning the target columns to the values of the
+corresponding columns in the source row. If a <code class="docutils literal notranslate"><span class="pre">condition</span></code> is specified, then it must
+evaluate to true for the new row to be inserted.</p>
+<p>See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for complete usage details.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>condition</strong> (<em>str</em><em> or </em><em>pyspark.sql.Column</em>) – Optional condition of the insert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">this builder</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="delta.tables.DeltaMergeBuilder.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#delta.tables.DeltaMergeBuilder.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the merge operation based on the built matched and not matched actions.</p>
+<p>See <a class="reference internal" href="#delta.tables.DeltaMergeBuilder" title="delta.tables.DeltaMergeBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeltaMergeBuilder</span></code></a> for complete usage details.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Evolving</p>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.4.</span></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to Delta Lake’s Python documentation page</a></li>
+<li><a class="reference internal" href="#module-delta.tables">DeltaTable</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">delta-core 0.4.1-SNAPSHOT documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>
