@@ -198,6 +198,7 @@ private[spark] class SparkSubmit extends Logging {
    *
    * Exposed for testing.
    */
+  // 准备执行环境，包括确定执行模式，确定主类，确定依赖包，确定参数等
   private[deploy] def prepareSubmitEnvironment(
       args: SparkSubmitArguments,
       conf: Option[HadoopConfiguration] = None)
