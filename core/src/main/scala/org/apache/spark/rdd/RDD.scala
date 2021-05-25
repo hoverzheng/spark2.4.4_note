@@ -147,6 +147,7 @@ abstract class RDD[T: ClassTag](
   def sparkContext: SparkContext = sc
 
   /** A unique ID for this RDD (within its SparkContext). */
+  // 每个RDD都有一个独一无二的ID，这是一个自增的整数
   val id: Int = sc.newRddId()
 
   /** A friendly name for this RDD */
@@ -164,18 +165,26 @@ abstract class RDD[T: ClassTag](
    * @param newLevel the target storage level
    * @param allowOverride whether to override any existing level with the new one
    */
+  // 设置rdd的存储级别，即:storageLevel字段的值
   private def persist(newLevel: StorageLevel, allowOverride: Boolean): this.type = {
     // TODO: Handle changes of StorageLevel
+    // 若存储级别已经被设置，则不能再次设置，直接抛出异常
+    // z注：这里其实可以不用这样处理，不需要抛出异常，作者也考虑到这一点，这里写了todo，但还没有处理
     if (storageLevel != StorageLevel.NONE && newLevel != storageLevel && !allowOverride) {
       throw new UnsupportedOperationException(
         "Cannot change storage level of an RDD after it was already assigned a level")
     }
     // If this is the first time this RDD is marked for persisting, register it
     // with the SparkContext for cleanups and accounting. Do this only once.
+    // 若rdd的storageLevel（默认值是StorageLevel.NONE）没有被设置
+    //
     if (storageLevel == StorageLevel.NONE) {
+      // 在sc中注册一个清理rdd的函数，当gc时可以及时的对没有使用的rdd进行回收
       sc.cleaner.foreach(_.registerRDDForCleanup(this))
+      // 所有缓存的rdd的引用都被记录到：SparkContext 的 persistentRdds变量中
       sc.persistRDD(this)
     }
+    // 设置新的存储级别
     storageLevel = newLevel
     this
   }
@@ -185,13 +194,19 @@ abstract class RDD[T: ClassTag](
    * it is computed. This can only be used to assign a new storage level if the RDD does not
    * have a storage level set yet. Local checkpointing is an exception.
    */
+  // 设置rdd的存储级别（注意这个操作是lazy操作），当第一次计算该rdd时才持久化rdd的值
+  // 与该函数对应的是unpersist函数
   def persist(newLevel: StorageLevel): this.type = {
+    // 若设置了本地检查点(也就是调用了localCheckpoint()函数)，需要把useDisk设置成true。
+    // 也就是说：若设置了local checkpoint 就必须写一份数据到磁盘上
     if (isLocallyCheckpointed) {
       // This means the user previously called localCheckpoint(), which should have already
       // marked this RDD for persisting. Here we should override the old storage level with
       // one that is explicitly requested by the user (after adapting it to use disk).
       persist(LocalRDDCheckpointData.transformStorageLevel(newLevel), allowOverride = true)
     } else {
+      // 设置rdd的存储级别,注意: 若该rdd已经设置了存储级别(也就是storageLevel不为NONE)，则会报错
+      // 也就是说rdd的persist不能重复调用。信息请看该函数的具体实现。
       persist(newLevel, allowOverride = false)
     }
   }
@@ -199,11 +214,13 @@ abstract class RDD[T: ClassTag](
   /**
    * Persist this RDD with the default storage level (`MEMORY_ONLY`).
    */
+  // 使用默认存储级别(内存)
   def persist(): this.type = persist(StorageLevel.MEMORY_ONLY)
 
   /**
    * Persist this RDD with the default storage level (`MEMORY_ONLY`).
    */
+  // 调用persist()函数，并使用默认参数
   def cache(): this.type = persist()
 
   /**
@@ -212,9 +229,11 @@ abstract class RDD[T: ClassTag](
    * @param blocking Whether to block until all blocks are deleted.
    * @return This RDD.
    */
+  // 把rdd从缓存中清除，并重置storageLevel
   def unpersist(blocking: Boolean = true): this.type = {
     logInfo("Removing RDD " + id + " from persistence list")
     sc.unpersistRDD(id, blocking)
+    // 把rdd的存储级别进行重置
     storageLevel = StorageLevel.NONE
     this
   }
@@ -247,15 +266,18 @@ abstract class RDD[T: ClassTag](
    * Get the array of partitions of this RDD, taking into account whether the
    * RDD is checkpointed or not.
    */
+  // 返回rdd的分区(分区标识)的数组。
   final def partitions: Array[Partition] = {
     checkpointRDD.map(_.partitions).getOrElse {
-      if (partitions_ == null) {
+      if (partitions_ == null) { // 若partitions_为空，调用对应rdd的获取分区
         partitions_ = getPartitions
+        // 判断一下是否index相等
         partitions_.zipWithIndex.foreach { case (partition, index) =>
           require(partition.index == index,
             s"partitions($index).partition == ${partition.index}, but it should equal $index")
         }
       }
+      // 若不为空直接返回其值
       partitions_
     }
   }
@@ -263,6 +285,7 @@ abstract class RDD[T: ClassTag](
   /**
    * Returns the number of partitions of this RDD.
    */
+  // 返回分区数
   @Since("1.6.0")
   final def getNumPartitions: Int = partitions.length
 
@@ -319,12 +342,14 @@ abstract class RDD[T: ClassTag](
   /**
    * Compute an RDD partition or read it from a checkpoint if the RDD is checkpointing.
    */
+  // 计算一个RDD的分区；若该RDD被checkpoint了，则从checkpoint的位置直接读取该分区
   private[spark] def computeOrReadCheckpoint(split: Partition, context: TaskContext): Iterator[T] =
   {
-    // 若checkpoint中存在该分区，则直接读取该分区的数据，调用compute函数计算该分区数据
+    // 该分区被checkpoint了(调用了checkpoint()函数)，则直接读取该分区的数据，调用compute函数计算该分区数据
     if (isCheckpointedAndMaterialized) {
       firstParent[T].iterator(split, context)
     } else {
+      // 计算rdd的某个分区的数据
       compute(split, context)
     }
   }
@@ -332,10 +357,14 @@ abstract class RDD[T: ClassTag](
   /**
    * Gets or computes an RDD partition. Used by RDD.iterator() when an RDD is cached.
    */
+  // 获取或计算一个RDD的分区
   private[spark] def getOrCompute(partition: Partition, context: TaskContext): Iterator[T] = {
+    // 获取数据块的名称，这是一个字符串，结构为：rdd_$rddid_$partition.index
     val blockId = RDDBlockId(id, partition.index)
     var readCachedBlock = true
     // This method is called on executors, so we need call SparkEnv.get instead of sc.env.
+    // 该方法在executor端被调用，而executor端只有sparkEnv对象，没有SparkContext对象，所以需要通过Env对象来调用;
+    // 调用blockManager来获取对应的数据块，若对应的块不存在，则计算该数据块
     SparkEnv.get.blockManager.getOrElseUpdate(blockId, storageLevel, elementClassTag, () => {
       readCachedBlock = false
       computeOrReadCheckpoint(partition, context)

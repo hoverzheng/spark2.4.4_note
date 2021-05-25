@@ -124,11 +124,15 @@ class BlockManagerMaster(
   }
 
   /** Remove all blocks belonging to the given RDD. */
+  // 从blockmanager中删除rdd对应的数据块
   def removeRdd(rddId: Int, blocking: Boolean) {
+    // driver端(blockmanager的master端)异步地发起RemoveRdd请求;
+    // 在worker端的BlockManagerSlaveEndpoint#receiveAndReply函数中会处理该请求，会从blockmanager中删除rdd
     val future = driverEndpoint.askSync[Future[Seq[Int]]](RemoveRdd(rddId))
     future.failed.foreach(e =>
       logWarning(s"Failed to remove RDD $rddId - ${e.getMessage}", e)
     )(ThreadUtils.sameThread)
+    // 是否要等待删除结束
     if (blocking) {
       timeout.awaitResult(future)
     }

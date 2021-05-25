@@ -20,10 +20,12 @@ package org.apache.spark
 /**
  * An identifier for a partition in an RDD.
  */
+// 分区标识；不同类型的RDD分区标识也不同;
 trait Partition extends Serializable {
   /**
    * Get the partition's index within its parent RDD
    */
+  // 分区的索引
   def index: Int
 
   // A better default implementation of HashCode

@@ -265,6 +265,7 @@ class SparkContext(config: SparkConf) extends Logging {
   private[spark] val addedJars = new ConcurrentHashMap[String, Long]().asScala
 
   // Keeps track of all persisted RDDs
+  // 用来保存所有被缓存的RDD的引用
   private[spark] val persistentRdds = {
     val map: ConcurrentMap[Int, RDD[_]] = new MapMaker().weakValues().makeMap[Int, RDD[_]]()
     map.asScala
