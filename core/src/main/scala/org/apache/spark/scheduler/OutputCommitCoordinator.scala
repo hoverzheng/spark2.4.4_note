@@ -117,6 +117,7 @@ private[spark] class OutputCommitCoordinator(conf: SparkConf, isDriver: Boolean)
    * @param maxPartitionId the maximum partition id that could appear in this stage's tasks (i.e.
    *                       the maximum possible value of `context.partitionId`).
    */
+  // 初始化stage的状态
   private[scheduler] def stageStart(stage: Int, maxPartitionId: Int): Unit = synchronized {
     stageStates.get(stage) match {
       case Some(state) =>

@@ -2054,6 +2054,7 @@ class SparkContext(config: SparkConf) extends Logging {
       func: (TaskContext, Iterator[T]) => U,
       partitions: Seq[Int],
       resultHandler: (Int, U) => Unit): Unit = {
+    // 查看sc是否已经停止，若停止直接抛出异常，终止执行
     if (stopped.get()) {
       throw new IllegalStateException("SparkContext has been shutdown")
     }
@@ -2063,6 +2064,7 @@ class SparkContext(config: SparkConf) extends Logging {
     if (conf.getBoolean("spark.logLineage", false)) {
       logInfo("RDD's recursive dependencies:\n" + rdd.toDebugString)
     }
+    // 运行后的顶层是调用dag调度器(dagScheduler)
     dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, resultHandler, localProperties.get)
     progressBar.foreach(_.finishAll())
     rdd.doCheckpoint()
@@ -2079,11 +2081,16 @@ class SparkContext(config: SparkConf) extends Logging {
    * @return in-memory collection with a result of the job (each collection element will contain
    * a result from one partition)
    */
+  // 在给定的分区集合的每个分区上运行给定的函数：func，并在数组中返回结果，结果数组和分区索引一一对应。
+  // 其中参数：partitions是分区索引（id）的集合，注意：每个job不会去计算目标RDD的所有分区。
+  // 以数组的方式返回计算结果，返回的数组包含了每个分区的计算结果，并一一对应。
   def runJob[T, U: ClassTag](
       rdd: RDD[T],
       func: (TaskContext, Iterator[T]) => U,
       partitions: Seq[Int]): Array[U] = {
+    // 创建一个数组，用来保存每个分区的计算结果
     val results = new Array[U](partitions.size)
+    // 把计算结果赋值给结果数组
     runJob[T, U](rdd, func, partitions, (index, res) => results(index) = res)
     results
   }
@@ -2127,7 +2134,9 @@ class SparkContext(config: SparkConf) extends Logging {
    * @return in-memory collection with a result of the job (each collection element will contain
    * a result from one partition)
    */
+  // 在RDD的所有分区上运行job，并在一个数组中返回所有结果。
   def runJob[T, U: ClassTag](rdd: RDD[T], func: Iterator[T] => U): Array[U] = {
+    // 调用运行job的函数，参数是：rdd引用；每个分区上要执行的函数；分区索引号
     runJob(rdd, func, 0 until rdd.partitions.length)
   }
 

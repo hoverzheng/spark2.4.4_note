@@ -24,6 +24,7 @@ package org.apache.spark.scheduler
  */
 // 一个任务应该运行的位置。这可能是一个主机或是一个(主机，executorID)对。
 // 在后来的事件中，会选择在该executorID中运行task。
+// 有三种位置可以选择
 private[spark] sealed trait TaskLocation {
   def host: String
 }
@@ -31,6 +32,7 @@ private[spark] sealed trait TaskLocation {
 /**
  * A location that includes both a host and an executor id on that host.
  */
+// 一个位置：包括主机和executor id
 private [spark]
 case class ExecutorCacheTaskLocation(override val host: String, executorId: String)
   extends TaskLocation {
@@ -40,6 +42,7 @@ case class ExecutorCacheTaskLocation(override val host: String, executorId: Stri
 /**
  * A location on a host.
  */
+// 以主机为主的位置
 private [spark] case class HostTaskLocation(override val host: String) extends TaskLocation {
   override def toString: String = host
 }

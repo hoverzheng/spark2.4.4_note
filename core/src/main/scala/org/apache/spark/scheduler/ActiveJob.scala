@@ -40,6 +40,7 @@ import org.apache.spark.util.CallSite
  * @param listener A listener to notify if tasks in this job finish or the job fails.
  * @param properties Scheduling properties attached to the job, such as fair scheduler pool name.
  */
+// 在DAGScheduler中运行的Job。
 private[spark] class ActiveJob(
     val jobId: Int,
     val finalStage: Stage,

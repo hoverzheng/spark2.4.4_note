@@ -253,6 +253,7 @@ abstract class RDD[T: ClassTag](
    * Get the list of dependencies of this RDD, taking into account whether the
    * RDD is checkpointed or not.
    */
+  // 获取RDD的依赖列表；需要考虑该RDD是否被checkpointed。
   final def dependencies: Seq[Dependency[_]] = {
     checkpointRDD.map(r => List(new OneToOneDependency(r))).getOrElse {
       if (dependencies_ == null) {
@@ -977,7 +978,9 @@ abstract class RDD[T: ClassTag](
    * @note This method should only be used if the resulting array is expected to be small, as
    * all the data is loaded into the driver's memory.
    */
+  // 返回包含所有RDD元素的数组
   def collect(): Array[T] = withScope {
+    // 调用sc的runJob函数，参数是：rdd和一个函数;这里的函数是返回迭代的数
     val results = sc.runJob(this, (iter: Iterator[T]) => iter.toArray)
     Array.concat(results: _*)
   }

@@ -82,6 +82,8 @@ private[scheduler] abstract class Stage(
    * StageInfo to tell SparkListeners when a job starts (which happens before any stage attempts
    * have been created).
    */
+  // 指向最近尝试的[[StageInfo]]对象的指针。
+  // 在实际创建任何尝试之前，需要在此进行初始化，因为DAGScheduler使用此StageInfo告知SparkListeners作业何时开始（在创建任何阶段尝试之前发生）。
   private var _latestInfo: StageInfo = StageInfo.fromStage(this, nextAttemptId)
 
   /**

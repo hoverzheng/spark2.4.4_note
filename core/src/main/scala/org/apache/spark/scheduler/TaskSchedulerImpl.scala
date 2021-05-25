@@ -135,6 +135,7 @@ private[spark] class TaskSchedulerImpl(
   // default scheduler is FIFO
   // 调度模式：spark.scheduler.mode配置项，默认是FIFO
   private val schedulingModeConf = conf.get(SCHEDULER_MODE_PROPERTY, SchedulingMode.FIFO.toString)
+  // 默认的调度模式是FIFO
   val schedulingMode: SchedulingMode =
     try {
       SchedulingMode.withName(schedulingModeConf.toUpperCase(Locale.ROOT))
@@ -167,7 +168,9 @@ private[spark] class TaskSchedulerImpl(
   }
 
   def initialize(backend: SchedulerBackend) {
+    // 设置调度后台
     this.backend = backend
+    // 根据调度模式，创建对应的可调度对象构造器
     schedulableBuilder = {
       schedulingMode match {
         case SchedulingMode.FIFO =>
@@ -207,6 +210,7 @@ private[spark] class TaskSchedulerImpl(
     logInfo("Adding task set " + taskSet.id + " with " + tasks.length + " tasks")
     this.synchronized {
       // 提交任务时每个TaskSet都会创建一个TaskSetManager对象。每个taskSet对应一个tms
+      // 该对象用来管理task，处理task失败的情况
       val manager = createTaskSetManager(taskSet, maxTaskFailures)
       // 获取提交的TaskSet所属的stage的id
       val stage = taskSet.stageId

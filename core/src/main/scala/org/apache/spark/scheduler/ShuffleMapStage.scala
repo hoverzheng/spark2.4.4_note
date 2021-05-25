@@ -38,9 +38,9 @@ import org.apache.spark.util.CallSite
 // 这些stage会在每个shuffle操作前发生，在这之前可能会包含多个pipeline操作，比如：map或filter等。
 // 在执行这些stage时，他们产生供后面的reduce操作需要获取的输出文件。
 private[spark] class ShuffleMapStage(
-    id: Int,
+    id: Int,  // 每个stage的唯一id
     rdd: RDD[_],
-    numTasks: Int,
+    numTasks: Int,  // 任务数，也就是分区数
     parents: List[Stage],
     firstJobId: Int,
     callSite: CallSite,

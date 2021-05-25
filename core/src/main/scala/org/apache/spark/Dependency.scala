@@ -66,13 +66,14 @@ abstract class NarrowDependency[T](_rdd: RDD[T]) extends Dependency[T] {
  * @param aggregator map/reduce-side aggregator for RDD's shuffle
  * @param mapSideCombine whether to perform partial aggregation (also known as map-side combine)
  */
+// 代表shuffle stage的输出依赖。注意，shuffle时，rdd是瞬态的，因为在executor端不需要它。
 @DeveloperApi
 class ShuffleDependency[K: ClassTag, V: ClassTag, C: ClassTag](
     @transient private val _rdd: RDD[_ <: Product2[K, V]],
-    val partitioner: Partitioner,
-    val serializer: Serializer = SparkEnv.get.serializer,
+    val partitioner: Partitioner,  // 分区器
+    val serializer: Serializer = SparkEnv.get.serializer, // 序列化器
     val keyOrdering: Option[Ordering[K]] = None,
-    val aggregator: Option[Aggregator[K, V, C]] = None,
+    val aggregator: Option[Aggregator[K, V, C]] = None,  // 是否有聚合操作
     val mapSideCombine: Boolean = false)
   extends Dependency[Product2[K, V]] {
 

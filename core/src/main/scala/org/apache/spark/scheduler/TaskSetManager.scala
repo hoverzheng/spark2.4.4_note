@@ -49,6 +49,7 @@ import org.apache.spark.util.collection.MedianHeap
  */
 // 调度在单个TaskSet中的任务。该类会跟踪每个task，若task失败则会对task进行重试（直到到达次数上限）
 // 并且会处理最优执行位置的选择。主要的接口是resourceOffer，询问TaskSet是否希望在一个节点上运行。
+// 该对象仅在TaskScheduler线程中被调用，它不应该在其他地方调用
 private[spark] class TaskSetManager(
     sched: TaskSchedulerImpl,
     val taskSet: TaskSet,
@@ -56,6 +57,7 @@ private[spark] class TaskSetManager(
     blacklistTracker: Option[BlacklistTracker] = None,
     clock: Clock = new SystemClock()) extends Schedulable with Logging {
 
+  // 获取sc的配置
   private val conf = sched.sc.conf
 
   // SPARK-21563 make a copy of the jars/files so they are consistent across the TaskSet
@@ -71,13 +73,16 @@ private[spark] class TaskSetManager(
   val speculationEnabled = conf.getBoolean("spark.speculation", false)
 
   // Serializer for closures and tasks.
+  // 任务的序列化对象
   val env = SparkEnv.get
   val ser = env.closureSerializer.newInstance()
 
   val tasks = taskSet.tasks
   private[scheduler] val partitionToIndex = tasks.zipWithIndex
     .map { case (t, idx) => t.partitionId -> idx }.toMap
+  // task的个数
   val numTasks = tasks.length
+  // 整数的个数
   val copiesRunning = new Array[Int](numTasks)
 
   // For each task, tracks whether a copy of the task has succeeded. A task will also be
@@ -143,6 +148,7 @@ private[spark] class TaskSetManager(
   // Duplicates are handled in dequeueTaskFromList, which ensures that a
   // task hasn't already started running before launching it.
   // 每个executor阻塞的task的集合。这个集合被维护成一个栈，从尾部进入，从尾部取出
+  // 这样就很容易检测出重复提交的task
   private val pendingTasksForExecutor = new HashMap[String, ArrayBuffer[Int]]
 
   // Set of pending tasks for each host. Similar to pendingTasksForExecutor,
@@ -192,6 +198,7 @@ private[spark] class TaskSetManager(
 
   // Add all our tasks to the pending lists. We do this in reverse order
   // of task index so that tasks with low indices get launched first.
+  // 按任务接受的顺序把任务放进阻塞队列中
   for (i <- (0 until numTasks).reverse) {
     addPendingTask(i)
   }
@@ -215,6 +222,7 @@ private[spark] class TaskSetManager(
 
   override def schedulableQueue: ConcurrentLinkedQueue[Schedulable] = null
 
+  // 调度模式有三种: FAIR，FIFO
   override def schedulingMode: SchedulingMode = SchedulingMode.NONE
 
   private[scheduler] var emittedTaskSizeWarning = false
@@ -222,7 +230,7 @@ private[spark] class TaskSetManager(
   /** Add a task to all the pending-task lists that it should be on. */
   // 添加一个task到全局的任务阻塞列表中
   private[spark] def addPendingTask(index: Int) {
-    for (loc <- tasks(index).preferredLocations) {
+    for (loc <- tasks(index).preferredLocations) { // 遍历任务最佳的执行位置
       loc match {
         case e: ExecutorCacheTaskLocation =>
           pendingTasksForExecutor.getOrElseUpdate(e.executorId, new ArrayBuffer) += index

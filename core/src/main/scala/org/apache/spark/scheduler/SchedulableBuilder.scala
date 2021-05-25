@@ -33,10 +33,11 @@ import org.apache.spark.util.Utils
  * buildPools: build the tree nodes(pools)
  * addTaskSetManager: build the leaf nodes(TaskSetManagers)
  */
-// 一个接口，用来构建可 调度树
+// 一个接口，用来构建可调度树。有两种实现方式：一种是FIFO(先进先出);一种是：Fair(公平调度)
 // buildPools：用来构建树的节点(pools)
 // addTaskSetManager：用来构建叶子节点（TaskSetManagers）
 private[spark] trait SchedulableBuilder {
+  // Pool是可调度实体
   def rootPool: Pool
 
   def buildPools(): Unit

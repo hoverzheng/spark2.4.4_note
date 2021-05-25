@@ -36,7 +36,7 @@ private[spark] class Pool(
     initWeight: Int)
   extends Schedulable with Logging {
 
-  // 调度队列，保存可调度对象
+  // 可调度对象同步队列，保存可调度对象
   val schedulableQueue = new ConcurrentLinkedQueue[Schedulable]
   // 调度对象名称到可调度对象的映射
   val schedulableNameToSchedulable = new ConcurrentHashMap[String, Schedulable]
