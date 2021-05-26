@@ -36,6 +36,8 @@ import org.apache.spark.{Partition, TaskContext}
  *                         sensitive, it may return totally different result when the input order
  *                         is changed. Mostly stateful functions are order-sensitive.
  */
+// 把函数作用于父RDD的每个分区上，而后产生的结果RDD
+// 参数preservesPartitioning标识：输入函数是否保留分区器，默认为false，但若"prev"是一对RDD并且输入函数不会修改键,则为true。
 private[spark] class MapPartitionsRDD[U: ClassTag, T: ClassTag](
     var prev: RDD[T],
     f: (TaskContext, Int, Iterator[T]) => Iterator[U],  // (TaskContext, partition index, iterator)
@@ -44,13 +46,16 @@ private[spark] class MapPartitionsRDD[U: ClassTag, T: ClassTag](
     isOrderSensitive: Boolean = false)
   extends RDD[U](prev) {
 
+  // 若参数preservesPartitioning为true，则使用父rdd的分区器
   override val partitioner = if (preservesPartitioning) firstParent[T].partitioner else None
 
+  // 分区数就是依赖的父RDD的分区数
   override def getPartitions: Array[Partition] = firstParent[T].partitions
 
   override def compute(split: Partition, context: TaskContext): Iterator[U] =
     f(context, split.index, firstParent[T].iterator(split, context))
 
+  // todo: // hover?? prev和firstParent的区别
   override def clearDependencies() {
     super.clearDependencies()
     prev = null

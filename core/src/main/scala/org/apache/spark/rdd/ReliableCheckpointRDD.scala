@@ -35,6 +35,8 @@ import org.apache.spark.util.{SerializableConfiguration, Utils}
 /**
  * An RDD that reads from checkpoint files previously written to reliable storage.
  */
+// 从已经写入到可靠存储的checkpoint的文件中读取数据后，形成的RDD
+// 注意：该RDD目前只支持保存到HDFS文件中
 private[spark] class ReliableCheckpointRDD[T: ClassTag](
     sc: SparkContext,
     val checkpointPath: String,
@@ -47,6 +49,7 @@ private[spark] class ReliableCheckpointRDD[T: ClassTag](
   private val broadcastedConf = sc.broadcast(new SerializableConfiguration(hadoopConf))
 
   // Fail fast if checkpoint directory does not exist
+  // 必须要设置checkpoint的路径，否则报错
   require(fs.exists(cpath), s"Checkpoint directory does not exist: $checkpointPath")
 
   /**
@@ -107,6 +110,7 @@ private[spark] object ReliableCheckpointRDD extends Logging {
   /**
    * Return the checkpoint file name for the given partition.
    */
+  // 返回给定分区的checkpoint文件名
   private def checkpointFileName(partitionIndex: Int): String = {
     "part-%05d".format(partitionIndex)
   }

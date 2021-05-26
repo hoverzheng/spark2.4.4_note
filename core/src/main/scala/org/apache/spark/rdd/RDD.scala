@@ -74,6 +74,9 @@ import org.apache.spark.util.random.{BernoulliCellSampler, BernoulliSampler, Poi
  * <a href="http://people.csail.mit.edu/matei/papers/2012/nsdi_spark.pdf">Spark paper</a>
  * for more details on RDD internals.
  */
+// RDD是spark的核心数据结构抽象。可以这样理解：RDD是一个保存同种类型数据的数组，但该数组是分布式的，分区的，会在不同的节点上计算和保存。
+// RDD是有类型的，有依赖的，容错的，不可变的；RDD的相互依赖关系形成了一个DAG图。
+// 根据产生RDD的方式不同，会产生多种RDD，每种RDD的计算方式，分区的实现方式，首先位置的计算方式等都不同。
 abstract class RDD[T: ClassTag](
     @transient private var _sc: SparkContext,
     @transient private var deps: Seq[Dependency[_]]
@@ -113,6 +116,7 @@ abstract class RDD[T: ClassTag](
    * :: DeveloperApi ::
    * Implemented by subclasses to compute a given partition.
    */
+  // 计算给定的分区，不同类型的RDD计算方式不同
   @DeveloperApi
   def compute(split: Partition, context: TaskContext): Iterator[T]
 
@@ -144,10 +148,11 @@ abstract class RDD[T: ClassTag](
   // =======================================================================
 
   /** The SparkContext that created this RDD. */
+  // 创建该RDD的sparkcontext
   def sparkContext: SparkContext = sc
 
   /** A unique ID for this RDD (within its SparkContext). */
-  // 每个RDD都有一个独一无二的ID，这是一个自增的整数
+  // 每个RDD都有一个唯一的整数ID，这是一个自增的整数
   val id: Int = sc.newRddId()
 
   /** A friendly name for this RDD */
@@ -286,7 +291,7 @@ abstract class RDD[T: ClassTag](
   /**
    * Returns the number of partitions of this RDD.
    */
-  // 返回分区数
+  // 获取rdd的分区数
   @Since("1.6.0")
   final def getNumPartitions: Int = partitions.length
 
@@ -1753,6 +1758,7 @@ abstract class RDD[T: ClassTag](
     Option(sc.getLocalProperty(RDD.CHECKPOINT_ALL_MARKED_ANCESTORS)).exists(_.toBoolean)
 
   /** Returns the first parent RDD */
+  // 返回依赖的第一个父RDD
   protected[spark] def firstParent[U: ClassTag]: RDD[U] = {
     dependencies.head.rdd.asInstanceOf[RDD[U]]
   }

@@ -20,7 +20,7 @@ package org.apache.spark
 /**
  * An identifier for a partition in an RDD.
  */
-// 分区标识；不同类型的RDD分区标识也不同;
+// 分区标识；不同类型的RDD分区标识也不同; 实现类和RDD的类型对应。
 trait Partition extends Serializable {
   /**
    * Get the partition's index within its parent RDD

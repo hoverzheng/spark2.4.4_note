@@ -53,6 +53,7 @@ private[spark] class PruneDependency[T](rdd: RDD[T], partitionFilterFunc: Int =>
  * and the execution DAG has a filter on the key, we can avoid launching tasks
  * on partitions that don't have the range covering the key.
  */
+// 用于修剪RDD分区/分区的RDD，因此我们可以避免在所有分区上启动任务。s
 @DeveloperApi
 class PartitionPruningRDD[T: ClassTag](
     prev: RDD[T],

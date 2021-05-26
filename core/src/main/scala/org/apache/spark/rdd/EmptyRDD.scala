@@ -24,6 +24,7 @@ import org.apache.spark.{Partition, SparkContext, TaskContext}
 /**
  * An RDD that has no partitions and no elements.
  */
+// 一个RDD，没有分区和元素
 private[spark] class EmptyRDD[T: ClassTag](sc: SparkContext) extends RDD[T](sc, Nil) {
 
   override def getPartitions: Array[Partition] = Array.empty

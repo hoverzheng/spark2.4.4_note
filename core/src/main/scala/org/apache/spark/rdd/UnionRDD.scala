@@ -73,6 +73,7 @@ class UnionRDD[T: ClassTag](
   private[spark] val isPartitionListingParallel: Boolean =
     rdds.length > conf.getInt("spark.rdd.parallelListingThreshold", 10)
 
+  // 获取分区(分区标识)数组
   override def getPartitions: Array[Partition] = {
     val parRDDs = if (isPartitionListingParallel) {
       val parArray = rdds.par

@@ -28,6 +28,8 @@ import org.apache.spark.shuffle.ShuffleHandle
  * :: DeveloperApi ::
  * Base class for dependencies.
  */
+// 描述RDD依赖关系信息的类
+// 对于RDD，有两种类型的依赖：窄依赖；宽依赖(shuffle依赖)；
 @DeveloperApi
 abstract class Dependency[T] extends Serializable {
   def rdd: RDD[T]
@@ -39,6 +41,8 @@ abstract class Dependency[T] extends Serializable {
  * Base class for dependencies where each partition of the child RDD depends on a small number
  * of partitions of the parent RDD. Narrow dependencies allow for pipelined execution.
  */
+// 窄依赖的信息。
+// 有三种窄依赖:OneToOneDependency(一对一);RangeDependency(范围依赖);PruneDependency依赖。
 @DeveloperApi
 abstract class NarrowDependency[T](_rdd: RDD[T]) extends Dependency[T] {
   /**
@@ -102,6 +106,7 @@ class ShuffleDependency[K: ClassTag, V: ClassTag, C: ClassTag](
  * :: DeveloperApi ::
  * Represents a one-to-one dependency between partitions of the parent and child RDDs.
  */
+// 代表一个父子RDD的一对一的分区依赖关系
 @DeveloperApi
 class OneToOneDependency[T](rdd: RDD[T]) extends NarrowDependency[T](rdd) {
   override def getParents(partitionId: Int): List[Int] = List(partitionId)

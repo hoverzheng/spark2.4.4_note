@@ -82,6 +82,7 @@ private[spark] class ParallelCollectionPartition[T: ClassTag](
   }
 }
 
+// 通过接口sc.parallelize会产生这种类型的RDD
 private[spark] class ParallelCollectionRDD[T: ClassTag](
     sc: SparkContext,
     @transient private val data: Seq[T],

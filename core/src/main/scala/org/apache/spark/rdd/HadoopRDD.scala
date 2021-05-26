@@ -45,6 +45,7 @@ import org.apache.spark.util.{NextIterator, SerializableConfiguration, ShutdownH
 /**
  * A Spark split class that wraps around a Hadoop InputSplit.
  */
+// spark分割类，使用hadoop的InputSplit来进行分割。
 private[spark] class HadoopPartition(rddId: Int, override val index: Int, s: InputSplit)
   extends Partition {
 
@@ -220,6 +221,7 @@ class HadoopRDD[K, V](
     }
   }
 
+  // 计算hadoopRDD
   override def compute(theSplit: Partition, context: TaskContext): InterruptibleIterator[(K, V)] = {
     val iter = new NextIterator[(K, V)] {
 
@@ -364,6 +366,7 @@ class HadoopRDD[K, V](
     // Do nothing. Hadoop RDD should not be checkpointed.
   }
 
+  // 对hadoopRDD进行非序列化的cache操作(设置存储级别)，会导致不可知的行为
   override def persist(storageLevel: StorageLevel): this.type = {
     if (storageLevel.deserialized) {
       logWarning("Caching HadoopRDDs as deserialized objects usually leads to undesired" +

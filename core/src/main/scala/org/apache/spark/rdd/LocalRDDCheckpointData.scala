@@ -32,12 +32,15 @@ import org.apache.spark.util.Utils
  * is written to the local, ephemeral block storage that lives in each executor. This is useful
  * for use cases where RDDs build up long lineages that need to be truncated often (e.g. GraphX).
  */
+// 在Spark的缓存层顶部实现的检查点实现。
+// 本地检查点通过跳过将RDD数据保存到可靠且容错的存储中的昂贵步骤来权衡容错性能。
 private[spark] class LocalRDDCheckpointData[T: ClassTag](@transient private val rdd: RDD[T])
   extends RDDCheckpointData[T](rdd) with Logging {
 
   /**
    * Ensure the RDD is fully cached so the partitions can be recovered later.
    */
+  // 确保RDD被全部缓存，这样分区数据就可以在后来恢复
   protected override def doCheckpoint(): CheckpointRDD[T] = {
     val level = rdd.getStorageLevel
 

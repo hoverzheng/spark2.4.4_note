@@ -34,6 +34,9 @@ import org.apache.spark.storage.RDDBlockId
  * @param rddId the ID of the checkpointed RDD
  * @param numPartitions the number of partitions in the checkpointed RDD
  */
+// 这是一个简单的占位符，因为原始被checkpointed的RDD期望被完全的cache。
+// 仅当executor失败或用户明确unpersists时，Spark才会尝试计算该CheckpointRDD。
+// (1)sc是SparkContext；(2)rddID是被checkpointed的RDD的Id；(3)numPartitions是checkpointed RDD的分区数。
 private[spark] class LocalCheckpointRDD[T: ClassTag](
     sc: SparkContext,
     rddId: Int,
@@ -44,6 +47,7 @@ private[spark] class LocalCheckpointRDD[T: ClassTag](
     this(rdd.context, rdd.id, rdd.partitions.length)
   }
 
+  // 获取该RDD的分区标识，这是一个数组
   protected override def getPartitions: Array[Partition] = {
     (0 until numPartitions).toArray.map { i => new CheckpointRDDPartition(i) }
   }
@@ -56,6 +60,8 @@ private[spark] class LocalCheckpointRDD[T: ClassTag](
    * is expected to be fully cached and so all partitions should already be computed and
    * available in the block storage.
    */
+  // 对于LocalCheckpointRDD来说，该方法在executor失败和明确调用unpersist后才会被调用。
+  // todo: xh??
   override def compute(partition: Partition, context: TaskContext): Iterator[T] = {
     throw new SparkException(
       s"Checkpoint block ${RDDBlockId(rddId, partition.index)} not found! Either the executor " +
