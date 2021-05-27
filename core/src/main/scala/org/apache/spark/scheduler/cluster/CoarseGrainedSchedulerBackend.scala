@@ -83,6 +83,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
   // Executors we have requested the cluster manager to kill that have not died yet; maps
   // the executor ID to whether it was explicitly killed by the driver (and thus shouldn't
   // be considered an app-related failure).
+  // 已经向CM请求杀死，但还么有死掉的executors。把executor ID映射到是否被driver杀死的boolan值。
   @GuardedBy("CoarseGrainedSchedulerBackend.this")
   private val executorsPendingToRemove = new HashMap[String, Boolean]
 
@@ -104,10 +105,12 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
     extends ThreadSafeRpcEndpoint with Logging {
 
     // Executors that have been lost, but for which we don't yet know the real exit reason.
+    // 已经lost的executors，但我们不知道真正的退出原因。
     protected val executorsPendingLossReason = new HashSet[String]
 
     protected val addressToExecutorId = new HashMap[RpcAddress, String]
 
+    // xh todo: 启动时定时线程定时发送的原因是什么？
     override def onStart() {
       // Periodically revive offers to allow delay scheduling to work
       val reviveIntervalMs = conf.getTimeAsMs("spark.scheduler.revive.interval", "1s")
@@ -239,13 +242,14 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
     }
 
     // Make fake resource offers on all executors
-    // 向所有Executor提供虚拟资源虚假
+    // 向所有Executor提供虚拟资源
     private def makeOffers() {
       // Make sure no executor is killed while some task is launching on it
-      // 确保没有executor被杀掉，当任务向其发送时
+      // 当任务向其发送时，确保没有executor被杀掉
       val taskDescs = withLock {
         // Filter out executors under killing
 
+        // executorDataMap的内容是如何维护的呢？
         val activeExecutors = executorDataMap.filterKeys(executorIsAlive)
         // 获取每个executor的空闲的运行资源
         val workOffers = activeExecutors.map {

@@ -225,7 +225,7 @@ private[spark] class DAGScheduler(
   //
   // TODO: Garbage collect information about failure epochs when we know there are no more
   //       stray messages to detect.
-  private val failedEpoch = new HashMap[String, Long]
+   private val failedEpoch = new HashMap[String, Long]
 
   private [scheduler] val outputCommitCoordinator = env.outputCommitCoordinator
 
@@ -2246,6 +2246,7 @@ private[scheduler] class DAGSchedulerEventProcessLoop(dagScheduler: DAGScheduler
     case AllJobsCancelled =>
       dagScheduler.doCancelAllJobs()
 
+      // 添加executor事件
     case ExecutorAdded(execId, host) =>
       dagScheduler.handleExecutorAdded(execId, host)
 

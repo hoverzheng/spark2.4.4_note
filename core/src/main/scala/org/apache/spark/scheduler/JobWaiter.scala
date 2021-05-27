@@ -29,7 +29,7 @@ import org.apache.spark.internal.Logging
  */
 // 等待DAGScheduler任务执行完成。当task结束，它把结果传递给处理函数.
 private[spark] class JobWaiter[T](
-    dagScheduler: DAGScheduler,
+    dagScheduler: DAGScheduler,  // 执行该task的DAGScheduler对象
     val jobId: Int,
     totalTasks: Int,
     resultHandler: (Int, T) => Unit)
@@ -50,6 +50,9 @@ private[spark] class JobWaiter[T](
    * Sends a signal to the DAGScheduler to cancel the job. The cancellation itself is handled
    * asynchronously. After the low level scheduler cancels all the tasks belonging to this job, it
    * will fail this job with a SparkException.
+    *
+    * 调用DAGScheduler#cancelJob来取消job。
+    * 这个操作是异步的，DAGScheduler会向事件队列中put一个JobCancelled事件。事件处理线程会处理该事件。
    */
   def cancel() {
     dagScheduler.cancelJob(jobId, None)

@@ -41,9 +41,13 @@ import org.apache.spark.util.{AccumulatorV2, SystemClock, ThreadUtils, Utils}
  * It can also work with a local setup by using a `LocalSchedulerBackend` and setting
  * isLocal to true. It handles common logic, like determining a scheduling order across jobs, waking
  * up to launch speculative tasks, etc.
+  *
+  *
  *
  * Clients should first call initialize() and start(), then submit task sets through the
  * submitTasks method.
+  *
+  * 客户端应该先调用initialize()和start()，然后使用submitTasks()方法来提交任务集。
  *
  * THREADING: [[SchedulerBackend]]s and task-submitting clients can call this class from multiple
  * threads, so it needs locks in public API methods to maintain its state. In addition, some
@@ -60,7 +64,7 @@ private[spark] class TaskSchedulerImpl(
   import TaskSchedulerImpl._
 
   def this(sc: SparkContext) = {
-    this(sc, sc.conf.get(config.MAX_TASK_FAILURES))
+    this(sc, sc.conf.get(config.MAX_TASK_FAILURES))   // 获取task最大失败次数
   }
 
   // Lazily initializing blacklistTrackerOpt to avoid getting empty ExecutorAllocationClient,
@@ -112,7 +116,8 @@ private[spark] class TaskSchedulerImpl(
 
   // The set of executors we have on each host; this is used to compute hostsAlive, which
   // in turn is used to decide when we can attain data locality on a given host
-  // 记录每个worker节点的executor的集合。这样，反过来可以用于决定：何时我们可以把数据保留在一个给定主机。
+  // 记录每个worker节点(主机)的executor的集合。
+  // 这样，反过来可以用于决定：何时我们可以把数据保留在一个给定主机。
   protected val hostToExecutors = new HashMap[String, HashSet[String]]
 
   protected val hostsByRack = new HashMap[String, HashSet[String]]
@@ -209,7 +214,7 @@ private[spark] class TaskSchedulerImpl(
     val tasks = taskSet.tasks
     logInfo("Adding task set " + taskSet.id + " with " + tasks.length + " tasks")
     this.synchronized {
-      // 提交任务时每个TaskSet都会创建一个TaskSetManager对象。每个taskSet对应一个tms
+      // 提交任务时每个TaskSet都会创建一个TaskSetManager对象。每个taskSet对应一个tms，
       // 该对象用来管理task，处理task失败的情况
       val manager = createTaskSetManager(taskSet, maxTaskFailures)
       // 获取提交的TaskSet所属的stage的id
@@ -378,22 +383,22 @@ private[spark] class TaskSchedulerImpl(
    * sets for tasks in order of priority. We fill each node with tasks in a round-robin manner so
    * that tasks are balanced across the cluster.
    */
-  // 有cluster manager调用，来在slave节点上提供资源。我们按优先级来询问我们的活动的task sets。
+  // 被cluster manager调用，用来在slave节点上提供资源。我们按优先级来询问我们的活动的task sets。
   // 我们以round-robin的方式来为每个worker节点分配任务，这样能保证跨集群的任务分配是均匀的。
   def resourceOffers(offers: IndexedSeq[WorkerOffer]): Seq[Seq[TaskDescription]] = synchronized {
     // Mark each slave as alive and remember its hostname
     // Also track if new executor is added
     var newExecAvail = false
-    // 遍历每一个WorkerOffer，每个o代表一个executor上的空闲资源(cpu)
+    // 遍历每一个WorkerOffer，每个o代表一个executor上的空闲资源(注意：这里主要是指cpu核数)
     for (o <- offers) {
-      // 若o的主机不在hostToExecutors中，则把它添加进去。
+      // 若o的主机不在hostToExecutors这个map中，则把它添加进去。
       if (!hostToExecutors.contains(o.host)) {
         hostToExecutors(o.host) = new HashSet[String]()
       }
       // 若executorId不是正在运行，把它添加到对应主机的hashset中
       if (!executorIdToRunningTaskIds.contains(o.executorId)) {
         hostToExecutors(o.host) += o.executorId
-        // dagscheduler提交一个ExecutorAdded事件
+        // 向dagscheduler提交一个ExecutorAdded事件
         executorAdded(o.executorId, o.host)
         executorIdToHost(o.executorId) = o.host
         // 在executor正在运行的taskid列表

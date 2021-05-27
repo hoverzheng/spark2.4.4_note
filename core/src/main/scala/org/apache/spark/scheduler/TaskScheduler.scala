@@ -30,7 +30,7 @@ import org.apache.spark.util.AccumulatorV2
  * them, retrying if there are failures, and mitigating stragglers. They return events to the
  * DAGScheduler.
   *
-  * 低层次的任务调度的接口；目前只有一种实现，就是默认的实现。
+  * 低层次的任务调度的接口；目前只有一种实现，就是默认的实现：TaskSchedulerImpl。
   * 该接口允许插入不同的TaskScheduler的实现，每个TaskScheduler为单个的SparkContext服务，实现任务的调度。
   * 这些taskscheudler获取来自DAGScheduler的taskSet，然后负责把这些taskSet发送给集群，运行task，若失败会进行重试。
   * 然后，返回事件给DAGScheduler。
@@ -42,6 +42,7 @@ private[spark] trait TaskScheduler {
 
   def rootPool: Pool
 
+  // 调度模式
   def schedulingMode: SchedulingMode
 
   def start(): Unit
@@ -55,6 +56,7 @@ private[spark] trait TaskScheduler {
   def stop(): Unit
 
   // Submit a sequence of tasks to run.
+  // 提交一组task去运行
   def submitTasks(taskSet: TaskSet): Unit
 
   // Kill all the tasks in a stage and fail the stage and all the jobs that depend on the stage.
@@ -99,6 +101,7 @@ private[spark] trait TaskScheduler {
   /**
    * Process a lost executor
    */
+  // 处理一个executor lost错误
   def executorLost(executorId: String, reason: ExecutorLossReason): Unit
 
   /**
