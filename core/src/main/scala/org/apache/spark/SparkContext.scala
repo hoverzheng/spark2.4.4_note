@@ -494,7 +494,9 @@ class SparkContext(config: SparkConf) extends Logging {
       HeartbeatReceiver.ENDPOINT_NAME, new HeartbeatReceiver(this))
 
     // Create and start the scheduler
-    // 创建和启动scheduler，若是local模式，scheduler的后台服务类是：SchedulerBackend
+    // 创建和启动scheduler。
+    // 根据运行模式来创建调度后台对象和taskscheduler对象
+    // 若是local模式，scheduler的后台服务类是：SchedulerBackend
     val (sched, ts) = SparkContext.createTaskScheduler(this, master, deployMode)
     _schedulerBackend = sched
     _taskScheduler = ts
@@ -2765,6 +2767,7 @@ object SparkContext extends Logging {
         scheduler.initialize(backend)
         (backend, scheduler)
 
+        // standalone模式
       case SPARK_REGEX(sparkUrl) =>
         val scheduler = new TaskSchedulerImpl(sc)
         val masterUrls = sparkUrl.split(",").map("spark://" + _)
@@ -2792,6 +2795,7 @@ object SparkContext extends Logging {
         }
         (backend, scheduler)
 
+        // cluster模式，可能是yarn,mesos,k8s等
       case masterUrl =>
         val cm = getClusterManager(masterUrl) match {
           case Some(clusterMgr) => clusterMgr

@@ -1,13 +1,13 @@
 <component name="libraryTable">
-  <library name="Maven: org.apache.hadoop:hadoop-mapreduce-client-jobclient:2.6.5">
+  <library name="Maven: org.apache.hadoop:hadoop-yarn-server-resourcemanager:2.6.5">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-jobclient/2.6.5/hadoop-mapreduce-client-jobclient-2.6.5.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-yarn-server-resourcemanager/2.6.5/hadoop-yarn-server-resourcemanager-2.6.5.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-jobclient/2.6.5/hadoop-mapreduce-client-jobclient-2.6.5-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-yarn-server-resourcemanager/2.6.5/hadoop-yarn-server-resourcemanager-2.6.5-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-mapreduce-client-jobclient/2.6.5/hadoop-mapreduce-client-jobclient-2.6.5-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-yarn-server-resourcemanager/2.6.5/hadoop-yarn-server-resourcemanager-2.6.5-sources.jar!/" />
       <root url="file://$PROJECT_DIR$/../hadoop-2.6.5-src/hadoop-common-project/hadoop-annotations/src/main/java" />
       <root url="file://$PROJECT_DIR$/../hadoop-2.6.5-src/hadoop-common-project/hadoop-auth-examples/src/main/java" />
       <root url="file://$PROJECT_DIR$/../hadoop-2.6.5-src/hadoop-common-project/hadoop-auth/src/main/java" />

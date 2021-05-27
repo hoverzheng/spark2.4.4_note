@@ -28,6 +28,8 @@ import org.apache.spark.util.CallSite
  * query planning, to look at map output statistics before submitting later stages. We distinguish
  * between these two types of jobs using the finalStage field of this class.
  *
+  * 在DAGScheduler中运行的Job。
+  *
  * Jobs are only tracked for "leaf" stages that clients directly submitted, through DAGScheduler's
  * submitJob or submitMapStage methods. However, either type of job may cause the execution of
  * other earlier stages (for RDDs in the DAG it depends on), and multiple jobs may share some of
@@ -41,6 +43,7 @@ import org.apache.spark.util.CallSite
  * @param properties Scheduling properties attached to the job, such as fair scheduler pool name.
  */
 // 在DAGScheduler中运行的Job。
+// RDD每个action操作都会提交一个job，一个job对应一个ActiveJob的对象。
 private[spark] class ActiveJob(
     val jobId: Int,
     val finalStage: Stage,
@@ -52,7 +55,7 @@ private[spark] class ActiveJob(
    * Number of partitions we need to compute for this job. Note that result stages may not need
    * to compute all partitions in their target RDD, for actions like first() and lookup().
    */
-    // 该job需要计算的分区数
+    // 该job需要计算的分区数; 注意，ResultStage有可能不需要计算在目标RDD的所有分区。比如：first()和lookup()等
   val numPartitions = finalStage match {
     case r: ResultStage => r.partitions.length
     case m: ShuffleMapStage => m.rdd.partitions.length

@@ -224,6 +224,7 @@
       Overridable test home. So that you can call individual pom files directly without
       things breaking.
     -->
+    <!--suppress UnresolvedMavenProperty -->
     <spark.test.home>${session.executionRootDirectory}</spark.test.home>
 
     <CodeCacheSize>512m</CodeCacheSize>

@@ -20,6 +20,7 @@
     <file url="file://$PROJECT_DIR$/mllib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/mllib-local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/repl" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/resource-managers/yarn" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sql/catalyst" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sql/core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sql/hive" charset="UTF-8" />

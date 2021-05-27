@@ -54,6 +54,12 @@ import org.apache.spark.util._
  * tasks that can run right away based on the data that's already on the cluster (e.g. map output
  * files from previous stages), though it may fail if this data becomes unavailable.
  *
+  * 高层次的调度层，实现了面向stage的调度。它为每个job计算一个stage的DAG(注：各个stage相互依赖，形成一个DAG图)，
+  * 并跟踪哪些RDD和stage的输出已经完成，并找到一个最小的调度计划来运行该job。
+  * 然后，它以TaskSets的形式来提交stage(xh注：把每个stage转换成多个task，再创建一个TaskSet)，
+  * 把TaskSet提交给较低层次的调度器TaskScheduler，这些TaskScheduler的实例运行在cluster中。
+  * 一个TaskSet包含所有基于现有数据可以运行的独立的task，若数据不可用，这些task也可能会失败。
+  *
  * Spark stages are created by breaking the RDD graph at shuffle boundaries. RDD operations with
  * "narrow" dependencies, like map() and filter(), are pipelined together into one set of tasks
  * in each stage, but operations with shuffle dependencies require multiple stages (one to write a
@@ -61,6 +67,14 @@ import org.apache.spark.util._
  * stage will have only shuffle dependencies on other stages, and may compute multiple operations
  * inside it. The actual pipelining of these operations happens in the RDD.compute() functions of
  * various RDDs
+  *
+  * 那么stage是如何创建的呢？Spark是根据RDD依赖关系图中的是否发生shuffle为边界来创建stage的。
+  * 因为，RDD的窄依赖操作，比如：map()或filter()，是可以放到一个stage的taskSet中的，它们可以形成pipeline执行。
+  * （xh注：之所以可以形成Pipeline执行，是由于没有shuffle操作，所以不需要从其他节点中拉取数据，所以一个操作完成后
+  * 的输出，可以作为下一个操作的输入，数据可以在内存中传输，从而优化了处理性能。）
+  * 但，会产生shuffle的操作（比如：groupByKey等）可能需要多个stage(一个写出map文件，另一个读取这些文件)。
+  *
+  * 最后，每个stage和其他stage，只会有一个shuffle依赖。 (xh: 如何理解)
  *
  * In addition to coming up with a DAG of stages, the DAGScheduler also determines the preferred
  * locations to run each task on, based on the current cache status, and passes these to the
@@ -68,6 +82,11 @@ import org.apache.spark.util._
  * lost, in which case old stages may need to be resubmitted. Failures *within* a stage that are
  * not caused by shuffle file loss are handled by the TaskScheduler, which will retry each task
  * a small number of times before cancelling the whole stage.
+  *
+  * 除了构建一个stage的DAG，DAGScheduler会决定每个task运行的最佳位置。(xh:如何确定的，依据是什么？)
+  * 基于目前缓存的状态，把这些任务传递给较低层次的任务调度器：TaskScheduler。
+  * 另外，DAGScheduler还会处理由于shuffle过程中输出文件丢失而导致的任务失败，老的stage会被重新提交。
+  * 如果不是由于"shuffle文件丢失"而导致的任务失败，由TaskScheduler进行处理，它会在整个stage被取消之前，多次重复提交每个task。
  *
  * When looking through this code, there are several key concepts:
  *
@@ -83,16 +102,22 @@ import org.apache.spark.util._
  *    Stages are often shared across multiple jobs, if these jobs reuse the same RDDs.
  *
  *  - Tasks are individual units of work, each sent to one machine.
+  *  Task是独立执行的工作单元，每个task会被发送到一台机器上。
  *
  *  - Cache tracking: the DAGScheduler figures out which RDDs are cached to avoid recomputing them
  *    and likewise remembers which shuffle map stages have already produced output files to avoid
  *    redoing the map side of a shuffle.
  *
+  * - 缓存跟踪：DAGScheduler会指出哪些RDD被缓存，以避免重复计算它们。
+  *                       同样，它还会记录shuffle的map阶段已经产生的输出文件，避免重复执行shuffle的map任务。
+  *
  *  - Preferred locations: the DAGScheduler also computes where to run each task in a stage based
  *    on the preferred locations of its underlying RDDs, or the location of cached or shuffle data.
+  * - 计算最佳位置：DAGScheduler会计算task运行的最佳位置；依据是它的父RDD的最佳计算位置 和 缓存或shuffle数据所在的位置。
  *
  *  - Cleanup: all data structures are cleared when the running jobs that depend on them finish,
  *    to prevent memory leaks in a long-running application.
+  * - 清理：为了防止内存泄漏，所有数据结构都会在job运行结束时被清理。
  *
  * To recover from failures, the same stage might need to run multiple times, which are called
  * "attempts". If the TaskScheduler reports that a task failed because a map output file from a
@@ -104,6 +129,13 @@ import org.apache.spark.util._
  * tasks from the old attempt of a stage could still be running, care must be taken to map any
  * events received in the correct Stage object.
  *
+  * 为了从故障中恢复，同一stage可能需要运行多次，这称为“attempts”。
+  * 如果TaskScheduler报告了一个由于：上一个阶段的shuffle输出文件丢失而导致的任务失败，则DAGScheduler会重新提交该丢失的阶段。
+  * 这是通过带有FetchFailed的CompletionEvent或ExecutorLost事件检测到的。
+  * DAGScheduler将等待一小段时间，以查看其他节点或任务是否失败，然后针对计算丢失任务的任何丢失阶段重新提交TaskSet。
+  * 作为此过程的一部分，我们可能还必须为以前清理过Stage对象的旧（完成）stage创建Stage对象。
+  * 由于来自阶段的旧尝试的任务仍然可以运行，因此必须注意映射在正确的Stage对象中接收到的所有事件。
+  *
  * Here's a checklist to use when making or reviewing changes to this class:
  *
  *  - All data structures should be cleared when the jobs involving them end to avoid indefinite
@@ -112,6 +144,16 @@ import org.apache.spark.util._
  *  - When adding a new data structure, update `DAGSchedulerSuite.assertDataStructuresEmpty` to
  *    include the new structure. This will help to catch memory leaks.
  */
+/**
+  * 高层次的调度器，实现了面向stage的调度。
+  * 总的来说DAGScheduler的功能有以下几个：
+  * (1) 根据RDD的依赖关系(lineage)，以shuffle依赖为边界，划分stage，构建stage的DAG。
+  * (2) 把stage构建成TaskSet
+  * (3) 为task寻找最佳执行位置
+  * (4) 缓存跟踪，记录哪些RDD被缓存，哪些shuffle map文件已经计算出来，避免重复计算
+  * (5) 任务完成时，清理内存，防止内存泄漏。
+  * (6) 任务执行时的容错处理。
+  */
 private[spark] class DAGScheduler(
     private[scheduler] val sc: SparkContext,
     private[scheduler] val taskScheduler: TaskScheduler,
@@ -233,6 +275,7 @@ private[spark] class DAGScheduler(
   private val messageScheduler =
     ThreadUtils.newDaemonSingleThreadScheduledExecutor("dag-scheduler-message")
 
+  // 创建DAGScheduler的事件处理循环对象，会在DAGScheduler构造函数的最后启动该事件(创建DAGScheduler对象时就会启动)
   private[spark] val eventProcessLoop = new DAGSchedulerEventProcessLoop(this)
   taskScheduler.setDAGScheduler(this)
 
@@ -1014,6 +1057,7 @@ private[spark] class DAGScheduler(
     listenerBus.post(SparkListenerTaskGettingResult(taskInfo))
   }
 
+  // 处理job提交事件。在调用RDD的action算子时，就会触发job的提交，最终会通过该函数来完成最终的job提交。
   private[scheduler] def handleJobSubmitted(jobId: Int,
       finalRDD: RDD[_],
       func: (TaskContext, Iterator[_]) => _,
@@ -1084,9 +1128,9 @@ private[spark] class DAGScheduler(
     finalStage.setActiveJob(job)
     // 把该job所有的stage保存到数组中
     val stageIds = jobIdToStageIds(jobId).toArray
-    // todo: hover
+    // todo: xh
     val stageInfos = stageIds.flatMap(id => stageIdToStage.get(id).map(_.latestInfo))
-    // todo: hover
+    // todo: xh
     listenerBus.post(
       SparkListenerJobStart(job.jobId, jobSubmissionTime, stageInfos, properties))
     // 提交finaStage，然后递归地提交依赖的stage
@@ -1308,6 +1352,7 @@ private[spark] class DAGScheduler(
     if (tasks.size > 0) {
       logInfo(s"Submitting ${tasks.size} missing tasks from $stage (${stage.rdd}) (first 15 " +
         s"tasks are for partitions ${tasks.take(15).map(_.partitionId)})")
+      // 通过低层的TaskScheduler来提交任务集(taskSet)
       taskScheduler.submitTasks(new TaskSet(
         tasks.toArray, stage.id, stage.latestInfo.attemptNumber, jobId, properties))
     } else {
@@ -2155,11 +2200,14 @@ private[spark] class DAGScheduler(
     taskScheduler.stop()
   }
 
+  // 在创建DAGscheduler对象时启动事件处理
+  // xh注：这其实是一个生产者消费者模型，通过阻塞来保存事件很容易实现
   eventProcessLoop.start()
 }
 
 // DAGScheduler的事件处理循环
 // 在父类EventLoop中定义了一个生产者&消费者模型，通过一个阻塞队列(BlockingQueue)来存放和消费事件
+// xh注：由于DAGScheduler会处理多种类型的事件，所以使用P-C模型可以很好完成这个任务。
 private[scheduler] class DAGSchedulerEventProcessLoop(dagScheduler: DAGScheduler)
   extends EventLoop[DAGSchedulerEvent]("dag-scheduler-event-loop") with Logging {
 
@@ -2168,6 +2216,7 @@ private[scheduler] class DAGSchedulerEventProcessLoop(dagScheduler: DAGScheduler
   /**
    * The main event loop of the DAG scheduler.
    */
+  // 重载EventLoop#onReceive函数
   override def onReceive(event: DAGSchedulerEvent): Unit = {
     val timerContext = timer.time()
     try {

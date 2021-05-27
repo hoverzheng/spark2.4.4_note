@@ -27,25 +27,33 @@ import org.apache.spark.internal.Logging
 /**
  * An event loop to receive events from the caller and process all events in the event thread. It
  * will start an exclusive event thread to process all events.
- *
+  * 事件处理循。用来接收来自调用者的事件，并在事件线程中处理所有的事件。它会创建一个独立的事件线程来处理所有的事件。
+  *
  * Note: The event queue will grow indefinitely. So subclasses should make sure `onReceive` can
  * handle events in time to avoid the potential OOM.
+  * 注意：事件队列将无限期增长。 因此，子类应确保`onReceive`可以及时处理事件，以避免潜在的OOM。
  */
 private[spark] abstract class EventLoop[E](name: String) extends Logging {
 
+  // 保存事件的队列，这是一个同步的阻塞链表，所以在使用时不需要进行同步处理。
   private val eventQueue: BlockingQueue[E] = new LinkedBlockingDeque[E]()
 
+  // 是否停止标识
   private val stopped = new AtomicBoolean(false)
 
+
   // Exposed for testing.
+  // 创建一个接收和处理事件的线程
   private[spark] val eventThread = new Thread(name) {
     setDaemon(true)
 
     override def run(): Unit = {
       try {
         while (!stopped.get) {
+          // 从阻塞事件队列中取一个元素；若没有元素，则会阻塞。
           val event = eventQueue.take()
           try {
+            // 接收并处理事件
             onReceive(event)
           } catch {
             case NonFatal(e) =>
@@ -64,6 +72,7 @@ private[spark] abstract class EventLoop[E](name: String) extends Logging {
 
   }
 
+  // 启动事件处理循环
   def start(): Unit = {
     if (stopped.get) {
       throw new IllegalStateException(name + " has already been stopped")
@@ -73,6 +82,7 @@ private[spark] abstract class EventLoop[E](name: String) extends Logging {
     eventThread.start()
   }
 
+  // 停止事件处理循环
   def stop(): Unit = {
     if (stopped.compareAndSet(false, true)) {
       eventThread.interrupt()

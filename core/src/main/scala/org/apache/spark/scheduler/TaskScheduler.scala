@@ -29,6 +29,12 @@ import org.apache.spark.util.AccumulatorV2
  * DAGScheduler for each stage, and are responsible for sending the tasks to the cluster, running
  * them, retrying if there are failures, and mitigating stragglers. They return events to the
  * DAGScheduler.
+  *
+  * 低层次的任务调度的接口；目前只有一种实现，就是默认的实现。
+  * 该接口允许插入不同的TaskScheduler的实现，每个TaskScheduler为单个的SparkContext服务，实现任务的调度。
+  * 这些taskscheudler获取来自DAGScheduler的taskSet，然后负责把这些taskSet发送给集群，运行task，若失败会进行重试。
+  * 然后，返回事件给DAGScheduler。
+  *
  */
 private[spark] trait TaskScheduler {
 

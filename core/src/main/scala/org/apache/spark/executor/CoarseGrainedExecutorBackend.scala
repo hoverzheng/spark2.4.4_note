@@ -37,6 +37,10 @@ import org.apache.spark.scheduler.cluster.CoarseGrainedClusterMessages._
 import org.apache.spark.serializer.SerializerInstance
 import org.apache.spark.util.{ThreadUtils, Utils}
 
+// 每个executor都对应一个CoarseGrainedExecutorBackend的运行进程，
+// CoarseGrainedExecutorBackend运行进程是通过命令行运行的，它在独立运行的进程中
+// 它负责管理管理executor的创建，启动，销毁等操作。通过RPC接口进行通讯。
+//
 private[spark] class CoarseGrainedExecutorBackend(
     override val rpcEnv: RpcEnv,
     driverUrl: String,

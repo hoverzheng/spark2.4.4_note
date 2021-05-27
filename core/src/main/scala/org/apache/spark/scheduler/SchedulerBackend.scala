@@ -21,8 +21,11 @@ package org.apache.spark.scheduler
  * A backend interface for scheduling systems that allows plugging in different ones under
  * TaskSchedulerImpl. We assume a Mesos-like model where the application gets resource offers as
  * machines become available and can launch tasks on them.
+  *
+  * 一个调度系统的调度后台接口，我们假设在类mesos模式下，当机器变得可用时，应用获取资源申请，并在它们之上发送任务。
  */
 private[spark] trait SchedulerBackend {
+  // xh todo: 为何要在这里生成唯一的appId?
   private val appId = "spark-application-" + System.currentTimeMillis
 
   def start(): Unit
