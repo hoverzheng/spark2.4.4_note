@@ -95,12 +95,16 @@ private[spark] class CoarseGrainedExecutorBackend(
     case RegisterExecutorFailed(message) =>
       exitExecutor(1, "Slave registration failed: " + message)
 
+    // 由driver端发送的运行task的消息，每个task对应一个线程；
+    // 其中参数data是task的描述信息
     case LaunchTask(data) =>
-      if (executor == null) {
+      if (executor == null) { // 在发送执行task请求时，executor应该已经启动了
         exitExecutor(1, "Received LaunchTask command but executor was null")
       } else {
+        // 把task描述进行反序列化操作
         val taskDesc = TaskDescription.decode(data.value)
         logInfo("Got assigned task " + taskDesc.taskId)
+        // 通过executor对象来运行task
         executor.launchTask(this, taskDesc)
       }
 

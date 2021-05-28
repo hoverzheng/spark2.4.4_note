@@ -21,15 +21,18 @@ import org.apache.spark.annotation.DeveloperApi
 /**
  * :: DeveloperApi ::
  * Stores information about an executor to pass from the scheduler to SparkListeners.
+  * 存储executor的信息，这些信息用来从调度器传递给SparkListener。
  */
 @DeveloperApi
 class ExecutorInfo(
-   val executorHost: String,
-   val totalCores: Int,
+   val executorHost: String,  // 主机名
+   val totalCores: Int,       // 总的CPU数量
    val logUrlMap: Map[String, String]) {
 
+  // 对象之间的比较
   def canEqual(other: Any): Boolean = other.isInstanceOf[ExecutorInfo]
 
+  // 重构equal函数
   override def equals(other: Any): Boolean = other match {
     case that: ExecutorInfo =>
       (that canEqual this) &&

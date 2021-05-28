@@ -133,6 +133,7 @@ private[spark] class TaskSetManager(
   // Whether the taskSet run tasks from a barrier stage. Spark must launch all the tasks at the
   // same time for a barrier stage.
   // 该taskSet是否是来自barrier stage。对于一个barrier stage，spark必须提交所有的task。
+  // xh todo: ? barrier stage是什么
   private[scheduler] def isBarrier = taskSet.tasks.nonEmpty && taskSet.tasks(0).isBarrier
 
   // Set of pending tasks for each executor. These collections are actually
@@ -264,6 +265,7 @@ private[spark] class TaskSetManager(
   /**
    * Return the pending tasks list for a given executor ID, or an empty list if
    * there is no map entry for that host
+    * 获取给定executor Id阻塞的task列表。若没有则返回空的task列表。
    */
   private def getPendingTasksForExecutor(executorId: String): ArrayBuffer[Int] = {
     pendingTasksForExecutor.getOrElse(executorId, ArrayBuffer())
@@ -290,6 +292,8 @@ private[spark] class TaskSetManager(
    * Return None if the list is empty.
    * This method also cleans up any tasks in the list that have already
    * been launched, since we want that to happen lazily.
+    *
+    * 从给定的队列中却出一个阻塞的task，并返回它的索引。
    */
   private def dequeueTaskFromList(
       execId: String,
@@ -299,6 +303,7 @@ private[spark] class TaskSetManager(
     while (indexOffset > 0) {
       indexOffset -= 1
       val index = list(indexOffset)
+      // 若索引为index的任务，把
       if (!isTaskBlacklistedOnExecOrNode(index, execId, host)) {
         // This should almost always be list.trimEnd(1) to remove tail
         list.remove(indexOffset)
@@ -315,6 +320,7 @@ private[spark] class TaskSetManager(
     taskAttempts(taskIndex).exists(_.host == host)
   }
 
+  // 该task对应的node和executor是否在task运行的黑名单中
   private def isTaskBlacklistedOnExecOrNode(index: Int, execId: String, host: String): Boolean = {
     taskSetBlacklistHelperOpt.exists { blacklist =>
       blacklist.isNodeBlacklistedForTask(host, index) ||
@@ -443,6 +449,7 @@ private[spark] class TaskSetManager(
     }
 
     // find a speculative task if all others tasks have been scheduled
+    // 若其他任务已经都被调度，查找推测任务
     dequeueSpeculativeTask(execId, host, maxLocality).map {
       case (taskIndex, allowedLocality) => (taskIndex, allowedLocality, true)}
   }
@@ -471,6 +478,7 @@ private[spark] class TaskSetManager(
       blacklist.isNodeBlacklistedForTaskSet(host) ||
         blacklist.isExecutorBlacklistedForTaskSet(execId)
     }
+    // 若可用资源不在黑名单中，并且处于zombie状态
     if (!isZombie && !offerBlacklisted) {
       val curTime = clock.getTimeMillis()
 
@@ -563,7 +571,7 @@ private[spark] class TaskSetManager(
   /**
    * Get the level we can launch tasks according to delay scheduling, based on current wait time.
    */
-  // 获取发起task的级别
+  // 获取发起task的位置级别
   private def getAllowedLocalityLevel(curTime: Long): TaskLocality.TaskLocality = {
     // Remove the scheduled or finished tasks lazily
     def tasksNeedToBeScheduledFrom(pendingTaskIds: ArrayBuffer[Int]): Boolean = {

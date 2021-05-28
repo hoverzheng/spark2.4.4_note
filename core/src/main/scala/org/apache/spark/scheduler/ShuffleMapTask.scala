@@ -86,6 +86,7 @@ private[spark] class ShuffleMapTask(
     } else 0L
     // 获取一个序列化对象
     val ser = SparkEnv.get.closureSerializer.newInstance()
+    // 反序列化，得到rdd和依赖对象
     val (rdd, dep) = ser.deserialize[(RDD[_], ShuffleDependency[_, _, _])](
       ByteBuffer.wrap(taskBinary.value), Thread.currentThread.getContextClassLoader)
     _executorDeserializeTime = System.currentTimeMillis() - deserializeStartTime
@@ -98,6 +99,8 @@ private[spark] class ShuffleMapTask(
       // 获取shffleManager对象
       val manager = SparkEnv.get.shuffleManager
       writer = manager.getWriter[Any, Any](dep.shuffleHandle, partitionId, context)
+      // 先计算rdd的分区数据
+      // 通过shuffle框架把rdd的计算结果写出到磁盘上(或内存中)
       writer.write(rdd.iterator(partition, context).asInstanceOf[Iterator[_ <: Product2[Any, Any]]])
       writer.stop(success = true).get
     } catch {

@@ -319,12 +319,16 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
           }
         }
         else {
+          // 获取以在executorDataMap中注册，且id为executorId的executor的信息。
           val executorData = executorDataMap(task.executorId)
+          // 该executor的空闲CPU数减去task需要的cpu数
           executorData.freeCores -= scheduler.CPUS_PER_TASK
 
           logDebug(s"Launching task ${task.taskId} on executor id: ${task.executorId} hostname: " +
             s"${executorData.executorHost}.")
 
+          // 发送执行任务的请求，在executor端，后台服务CoarseGrainedExecutorBackend和executor都已经启动并运行起来了，
+          // CoarseGrainedExecutorBackend会接收该请求，并处理它
           executorData.executorEndpoint.send(LaunchTask(new SerializableBuffer(serializedTask)))
         }
       }

@@ -71,6 +71,8 @@ private[spark] abstract class Task[T](
 
   /**
    * Called by [[org.apache.spark.executor.Executor]] to run this task.
+    *
+    * 由Executor调用，来执行task
    *
    * @param taskAttemptId an identifier for this task attempt that is unique within a SparkContext.
    * @param attemptNumber how many times this task has been attempted (0 for the first attempt)
@@ -83,6 +85,7 @@ private[spark] abstract class Task[T](
     SparkEnv.get.blockManager.registerTask(taskAttemptId)
     // TODO SPARK-24874 Allow create BarrierTaskContext based on partitions, instead of whether
     // the stage is barrier.
+    // todo: xh? 什么是barrier
     val taskContext = new TaskContextImpl(
       stageId,
       stageAttemptId, // stageAttemptId and stageAttemptNumber are semantically equal
@@ -121,7 +124,7 @@ private[spark] abstract class Task[T](
 
     try {
       runTask(context)
-    } catch {
+    } catch { // 处理任务失败的异常情况
       case e: Throwable =>
         // Catch all errors; run task failure callbacks, and rethrow the exception.
         try {

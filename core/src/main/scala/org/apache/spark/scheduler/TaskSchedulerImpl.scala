@@ -89,6 +89,7 @@ private[spark] class TaskSchedulerImpl(
   val STARVATION_TIMEOUT_MS = conf.getTimeAsMs("spark.starvation.timeout", "15s")
 
   // CPUs to request per task
+  // 每个task需要的cpu数
   val CPUS_PER_TASK = conf.getInt("spark.task.cpus", 1)
 
   // TaskSetManagers are not thread safe, so any access to one should be synchronized
@@ -348,7 +349,7 @@ private[spark] class TaskSchedulerImpl(
     for (i <- 0 until shuffledOffers.size) {
       val execId = shuffledOffers(i).executorId
       val host = shuffledOffers(i).host
-      // executor上的可用cpu数大于每个task需要的cpu数时，才能够发起task
+      // executor上的可用cpu数大于每个task需要的cpu数时(默认是1)，才能够发起task
       if (availableCpus(i) >= CPUS_PER_TASK) {
         try {
           for (task <- taskSet.resourceOffer(execId, host, maxLocality)) {
@@ -449,7 +450,7 @@ private[spark] class TaskSchedulerImpl(
     // 然后按局部性级别的升序将其提供给每个节点，以便它有机会在所有节点上启动本地任务。
     for (taskSet <- sortedTaskSets) {
       // Skip the barrier taskSet if the available slots are less than the number of pending tasks.
-      // 跳过阻拦taskSet，若可用的slot比阻塞的task少的话
+      // 跳过阻拦taskSet，若可用的slot比阻塞的task少的话. xh todo: barrier taskSet是什么
       if (taskSet.isBarrier && availableSlots < taskSet.numTasks) {
         // Skip the launch process.
         // TODO SPARK-24819 If the job requires more slots than available (both busy and free

@@ -47,10 +47,14 @@ import org.apache.spark.util.io.ChunkedByteBuffer
 
 /**
  * Spark executor, backed by a threadpool to run tasks.
- *
+  * spark的executor端，通过它来管理和执行任务(task)。
+  *
  * This can be used with Mesos, YARN, and the standalone scheduler.
  * An internal RPC interface is used for communication with the driver,
  * except in the case of Mesos fine-grained mode.
+  * executor能用于Mesos，YARN和standalone调度器。内部的RPC接口是用来和driver端通信的，
+  * 但在Mesos的fine-grained模式下除外。
+  *
  */
 // spark的Executor端
 private[spark] class Executor(
@@ -89,6 +93,7 @@ private[spark] class Executor(
   }
 
   // Start worker thread pool
+  // 开始线程池
   private val threadPool = {
     val threadFactory = new ThreadFactoryBuilder()
       .setDaemon(true)
@@ -207,8 +212,11 @@ private[spark] class Executor(
   private[executor] def numRunningTasks: Int = runningTasks.size()
 
   def launchTask(context: ExecutorBackend, taskDescription: TaskDescription): Unit = {
+    // 创建一个TaskRunner对象
     val tr = new TaskRunner(context, taskDescription)
+    // 把task放入正在运行的队列中
     runningTasks.put(taskDescription.taskId, tr)
+    // 在线程池中执行该对象
     threadPool.execute(tr)
   }
 
@@ -357,9 +365,13 @@ private[spark] class Executor(
     }
 
     override def run(): Unit = {
+      // 获取线程的标识
       threadId = Thread.currentThread.getId
+      // 设置线程名称
       Thread.currentThread.setName(threadName)
+
       val threadMXBean = ManagementFactory.getThreadMXBean
+      // 获取task内存管理对象
       val taskMemoryManager = new TaskMemoryManager(env.memoryManager, taskId)
       val deserializeStartTime = System.currentTimeMillis()
       val deserializeStartCpuTime = if (threadMXBean.isCurrentThreadCpuTimeSupported) {
@@ -368,6 +380,7 @@ private[spark] class Executor(
       Thread.currentThread.setContextClassLoader(replClassLoader)
       val ser = env.closureSerializer.newInstance()
       logInfo(s"Running $taskName (TID $taskId)")
+      // 更新任务的状态，把task的状态发送给driver端；driver端由调度后台接收该消息
       execBackend.statusUpdate(taskId, TaskState.RUNNING, EMPTY_BYTE_BUFFER)
       var taskStartTime: Long = 0
       var taskStartCpu: Long = 0
@@ -405,6 +418,7 @@ private[spark] class Executor(
         }
 
         // Run the actual task and measure its runtime.
+        // 运行实际的任务，并测量运行时间
         taskStartTime = System.currentTimeMillis()
         taskStartCpu = if (threadMXBean.isCurrentThreadCpuTimeSupported) {
           threadMXBean.getCurrentThreadCpuTime
