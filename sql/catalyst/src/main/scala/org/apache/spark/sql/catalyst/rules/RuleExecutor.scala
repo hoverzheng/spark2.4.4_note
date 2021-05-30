@@ -52,9 +52,11 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
   case class FixedPoint(maxIterations: Int) extends Strategy
 
   /** A batch of rules. */
+  // 规则的集合
   protected case class Batch(name: String, strategy: Strategy, rules: Rule[TreeType]*)
 
   /** Defines a sequence of rule batches, to be overridden by the implementation. */
+  // 一系列规则集，需要实现覆盖
   protected def batches: Seq[Batch]
 
   /**
@@ -66,9 +68,11 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
   protected def isPlanIntegral(plan: TreeType): Boolean = true
 
   /**
-   * Executes the batches of rules defined by the subclass. The batches are executed serially
-   * using the defined execution strategy. Within each batch, rules are also executed serially.
-   */
+    * Executes the batches of rules defined by the subclass. The batches are executed serially
+    * using the defined execution strategy. Within each batch, rules are also executed serially.
+    * 执行子类定义的规则集。规则集中的规则使用定义的执行策略来执行。在每个规则集中，规则也是顺序执行的。
+    * 把每个规则集用于给定的plan。
+    */
   def execute(plan: TreeType): TreeType = {
     var curPlan = plan
     val queryExecutionMetrics = RuleExecutor.queryExecutionMeter

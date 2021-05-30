@@ -39,6 +39,8 @@ import org.apache.spark.util.{MutableURLClassLoader, Utils}
 
 /**
  * A class that holds all state shared across sessions in a given [[SQLContext]].
+  *
+  * 该类保存所有在给定的SQLContext中共享的，跨session的状态共享信息。
  */
 private[sql] class SharedState(val sparkContext: SparkContext) extends Logging {
 

@@ -82,11 +82,13 @@ abstract class TreeNode[BaseType <: TreeNode[BaseType]] extends Product {
   /**
    * Returns a Seq of the children of this node.
    * Children should not change. Immutability required for containsChild optimization
+    * 返回该节点的儿子的列表。儿子列表不应该改变。containsChild的优化需要这种不可变性。
    */
   def children: Seq[BaseType]
 
   lazy val containsChild: Set[TreeNode[_]] = children.toSet
 
+  // treenode的hashcode
   private lazy val _hashCode: Int = scala.util.hashing.MurmurHash3.productHash(this)
   override def hashCode(): Int = _hashCode
 
@@ -520,6 +522,7 @@ abstract class TreeNode[BaseType <: TreeNode[BaseType]] extends Product {
   /**
    * All the nodes that should be shown as a inner nested tree of this node.
    * For example, this can be used to show sub-queries.
+    * 初始化为空列表。
    */
   protected def innerChildren: Seq[TreeNode[_]] = Seq.empty
 

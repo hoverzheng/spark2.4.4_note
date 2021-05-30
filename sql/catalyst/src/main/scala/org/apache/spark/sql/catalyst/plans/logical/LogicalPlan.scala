@@ -26,6 +26,7 @@ import org.apache.spark.sql.catalyst.plans.logical.statsEstimation.LogicalPlanSt
 import org.apache.spark.sql.types.StructType
 
 
+// 逻辑执行计划
 abstract class LogicalPlan
   extends QueryPlan[LogicalPlan]
   with AnalysisHelper
@@ -145,6 +146,7 @@ abstract class LeafNode extends LogicalPlan {
 
 /**
  * A logical plan node with single child.
+  * 只有一个儿子的逻辑执行计划。
  */
 abstract class UnaryNode extends LogicalPlan {
   def child: LogicalPlan

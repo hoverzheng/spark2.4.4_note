@@ -46,6 +46,11 @@ abstract class GenericStrategy[PhysicalPlan <: TreeNode[PhysicalPlan]] extends L
  * it can call [[GenericStrategy#planLater planLater]], which returns a placeholder
  * object that will be [[collectPlaceholders collected]] and filled in
  * using other available strategies.
+  *
+  * 把LogicalPlan转换成物理计划的抽象类。
+  * 子类负责指定一个 [[GenericStrategy]] 对象列表，每个对象都可以返回一个可能的物理计划选项列表。
+  * 如果给定的策略无法规划树中所有剩余的算子，它可以调用 [[GenericStrategy#planLater planLater]]，
+  * 它返回一个占位符对象，该对象将被 [[collectPlaceholders collect]] 并使用其他可用策略填充 .
  *
  * TODO: RIGHT NOW ONLY ONE PLAN IS RETURNED EVER...
  *       PLAN SPACE EXPLORATION WILL BE IMPLEMENTED LATER.

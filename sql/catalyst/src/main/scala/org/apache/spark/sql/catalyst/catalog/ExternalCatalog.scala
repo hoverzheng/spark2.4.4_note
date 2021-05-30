@@ -23,10 +23,14 @@ import org.apache.spark.sql.types.StructType
 
 /**
  * Interface for the system catalog (of functions, partitions, tables, and databases).
+  * 系统元数据(catalog)的接口。元数据包括（函数，分区，表和数据库）
  *
  * This is only used for non-temporary items, and implementations must be thread-safe as they
  * can be accessed in multiple threads. This is an external catalog because it is expected to
  * interact with external systems.
+  * 它仅用于非临时项目，并且实现必须是线程安全的，因为它们可以在多个线程中进行访问。
+  * 这是一个外部元数据，因为它需要与外部系统交互。
+  *
  *
  * Implementations should throw [[NoSuchDatabaseException]] when databases don't exist.
  */

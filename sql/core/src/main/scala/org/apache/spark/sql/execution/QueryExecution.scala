@@ -35,9 +35,11 @@ import org.apache.spark.util.Utils
 /**
  * The primary workflow for executing relational queries using Spark.  Designed to allow easy
  * access to the intermediate phases of query execution for developers.
- *
+  * spark执行关联查询的主要工作流。设计用于允许开发人员轻松访问查询执行的中间阶段。
+  *
  * While this is not a public class, we should avoid changing the function names for the sake of
  * changing them, because a lot of developers use the feature for debugging.
+  * 因为 这不是一个公共类，我们应该避免改变函数名，因为很多开发者用这些特点来进行调试。
  */
 class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
 
@@ -77,17 +79,20 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
   lazy val executedPlan: SparkPlan = prepareForExecution(sparkPlan)
 
   /** Internal version of the RDD. Avoids copies and has no schema */
+    // RDD的内部版本。避免复制，并且也没有schema。
   lazy val toRdd: RDD[InternalRow] = executedPlan.execute()
 
   /**
    * Prepares a planned [[SparkPlan]] for execution by inserting shuffle operations and internal
    * row format conversions as needed.
+    * 为执行准备一个计划好的SparkPlan，通过根据需要插入shuffle操作和内部行的格式化转换。
    */
   protected def prepareForExecution(plan: SparkPlan): SparkPlan = {
     preparations.foldLeft(plan) { case (sp, rule) => rule.apply(sp) }
   }
 
   /** A sequence of rules that will be applied in order to the physical plan before execution. */
+  // 一系列规则，这些规则会在物理计划执行前，作用于计划物理化。
   protected def preparations: Seq[Rule[SparkPlan]] = Seq(
     PlanSubqueries(sparkSession),
     EnsureRequirements(sparkSession.sessionState.conf),

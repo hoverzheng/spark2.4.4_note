@@ -84,18 +84,30 @@ private[sql] object Dataset {
  * A Dataset is a strongly typed collection of domain-specific objects that can be transformed
  * in parallel using functional or relational operations. Each Dataset also has an untyped view
  * called a `DataFrame`, which is a Dataset of [[Row]].
+  *
+  * 数据集是特定领域对象的强类型集合，可以使用函数或关系操作并行转换。
+  * 每个数据集还有一个无类型视图，称为“DataFrame”，它是一个 [[Row]] 的数据集。
  *
  * Operations available on Datasets are divided into transformations and actions. Transformations
  * are the ones that produce new Datasets, and actions are the ones that trigger computation and
  * return results. Example transformations include map, filter, select, and aggregate (`groupBy`).
  * Example actions count, show, or writing data out to file systems.
- *
+  *
+  * 数据集上可用的操作分为转换和操作（ transformations and actions）。
+  * 和RDD的操作类似，DataSet的转换操作用来产生新的DataSet；而Actions操作会触发计算并返回结果。
+  * 常用的转换操作有：map,filter，select和聚合（`groupBy`）。常用的actions操作有：count，show，或将数据写入文件系统的操作。
+  *
  * Datasets are "lazy", i.e. computations are only triggered when an action is invoked. Internally,
  * a Dataset represents a logical plan that describes the computation required to produce the data.
  * When an action is invoked, Spark's query optimizer optimizes the logical plan and generates a
  * physical plan for efficient execution in a parallel and distributed manner. To explore the
  * logical plan as well as optimized physical plan, use the `explain` function.
  *
+  * 数据集是“懒加载的”，就是说：只有在调用Action操作时才会触发计算。
+  * 在内部，数据集表示描述生成数据所需计算的逻辑计划。
+  * 当一个Action操作被调用时，Spark 的查询优化器（query optimizer）会优化逻辑计划并生成一个物理计划，
+  * 以便以并行和分布式的方式高效执行。要探索逻辑计划以及被优化的物理计划，可以使用`explain`函数。
+  *
  * To efficiently support domain-specific objects, an [[Encoder]] is required. The encoder maps
  * the domain specific type `T` to Spark's internal type system. For example, given a class `Person`
  * with two fields, `name` (string) and `age` (int), an encoder is used to tell Spark to generate
@@ -103,6 +115,12 @@ private[sql] object Dataset {
  * often has much lower memory footprint as well as are optimized for efficiency in data processing
  * (e.g. in a columnar format). To understand the internal binary representation for data, use the
  * `schema` function.
+  *
+  * 为了有效地支持特定域的对象，需要一个 [[Encoder]]。编码器将域特定类型“T”映射到 Spark 的内部类型系统。
+  * 例如，给定一个具有两个字段的"Person"类：“name”（string）和“age”（int），
+  * 编码器用于告诉 Spark 在运行时生成代码以将“Person”对象序列化为二进制结构。
+  * 这种二进制结构通常具有低得多的内存占用，并且针对数据处理的效率进行了优化（例如：以列为格式）。
+  * 要了解数据的内部二进制表示，可以使用 `schema` 函数。
  *
  * There are typically two ways to create a Dataset. The most common way is by pointing Spark
  * to some files on storage systems, using the `read` function available on a `SparkSession`.
@@ -163,8 +181,7 @@ private[sql] object Dataset {
  * @groupname action Actions
  * @groupname untypedrel Untyped transformations
  * @groupname typedrel Typed transformations
- *
- * @since 1.6.0
+  * @since 1.6.0
  */
 @InterfaceStability.Stable
 class Dataset[T] private[sql](
@@ -177,7 +194,7 @@ class Dataset[T] private[sql](
 
   // Note for Spark contributors: if adding or updating any action in `Dataset`, please make sure
   // you wrap it with `withNewExecutionId` if this actions doesn't call other action.
-
+  // 在创建DataSet时，先创建QueryExecution对象
   def this(sparkSession: SparkSession, logicalPlan: LogicalPlan, encoder: Encoder[T]) = {
     this(sparkSession, sparkSession.sessionState.executePlan(logicalPlan), encoder)
   }
@@ -189,6 +206,7 @@ class Dataset[T] private[sql](
   @transient private[sql] val logicalPlan: LogicalPlan = {
     // For various commands (like DDL) and queries with side effects, we force query execution
     // to happen right away to let these side effects take place eagerly.
+    // 对于各种命令(比如：DDL)和查询命令
     queryExecution.analyzed match {
       case c: Command =>
         LocalRelation(c.output, withAction("command", queryExecution)(_.executeCollect()))

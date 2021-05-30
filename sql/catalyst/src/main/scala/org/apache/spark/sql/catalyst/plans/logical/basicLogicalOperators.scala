@@ -208,6 +208,7 @@ object Union {
 
 /**
  * Logical plan for unioning two plans, without a distinct. This is UNION ALL in SQL.
+  * union两个计划的逻辑计划。
  */
 case class Union(children: Seq[LogicalPlan]) extends LogicalPlan {
   override def maxRows: Option[Long] = {

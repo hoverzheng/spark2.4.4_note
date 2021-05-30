@@ -50,9 +50,13 @@ import org.apache.spark.util.{CallSite, Utils}
 /**
  * The entry point to programming Spark with the Dataset and DataFrame API.
  *
+  * 使用Dataset and DataFrame API编程的入口对象。
+  *
  * In environments that this has been created upfront (e.g. REPL, notebooks), use the builder
  * to get an existing session:
  *
+  * 可以通过builder来获取一个已经存在的SparkSession。
+  *
  * {{{
  *   SparkSession.builder().getOrCreate()
  * }}}
@@ -99,6 +103,7 @@ class SparkSession private(
   /**
    * The version of Spark on which this application is running.
    *
+    * 目前使用的spark版本信息。
    * @since 2.0.0
    */
   def version: String = SPARK_VERSION
@@ -110,8 +115,12 @@ class SparkSession private(
   /**
    * State shared across sessions, including the `SparkContext`, cached data, listener,
    * and a catalog that interacts with external systems.
+    *
+    * 跨session的状态共享，包括SparkContext，缓存的数据，listener和catalog等信息。
    *
    * This is internal to Spark and there is no guarantee on interface stability.
+    *
+    * 这是spark的内部，不保证接口的稳定性。
    *
    * @since 2.2.0
    */
@@ -123,6 +132,8 @@ class SparkSession private(
 
   /**
    * Initial options for session. This options are applied once when sessionState is created.
+    *
+    * session的初始化选项。该选项在sessionState创建时，被使用。
    */
   @transient
   private[sql] val initialSessionOptions = new scala.collection.mutable.HashMap[String, String]
@@ -153,6 +164,7 @@ class SparkSession private(
   /**
    * A wrapped version of this session in the form of a [[SQLContext]], for backward compatibility.
    *
+    * 为了向后兼容，该函数封装了SQLContext。
    * @since 2.0.0
    */
   @transient
@@ -164,6 +176,8 @@ class SparkSession private(
    * This is the interface through which the user can get and set all Spark and Hadoop
    * configurations that are relevant to Spark SQL. When getting the value of a config,
    * this defaults to the value set in the underlying `SparkContext`, if any.
+    *
+    * 获取Spark SQL的配置。
    *
    * @since 2.0.0
    */
@@ -193,6 +207,8 @@ class SparkSession private(
 
   /**
    * A collection of methods for registering user-defined functions (UDF).
+    *
+    * 该函数用来注册用户的UDF。
    *
    * The following example registers a Scala closure as UDF:
    * {{{
@@ -266,6 +282,7 @@ class SparkSession private(
   /**
    * Returns a `DataFrame` with no rows or columns.
    *
+    * 返回一个空的DataFrame，没有行和列。
    * @since 2.0.0
    */
   @transient
@@ -277,6 +294,7 @@ class SparkSession private(
    * :: Experimental ::
    * Creates a new [[Dataset]] of type T containing zero elements.
    *
+    * 创建一个新的类型为T的空的Dataset。
    * @return 2.0.0
    */
   @Experimental
@@ -435,7 +453,7 @@ class SparkSession private(
   /* ------------------------------- *
    |  Methods for creating DataSets  |
    * ------------------------------- */
-
+  // 创建dataset的方法
   /**
    * :: Experimental ::
    * Creates a [[Dataset]] from a local Seq of data of a given type. This method requires an
@@ -601,10 +619,12 @@ class SparkSession private(
   /* ------------------------- *
    |  Catalog-related methods  |
    * ------------------------- */
-
+  // 可以操作元数据的方法。
   /**
    * Interface through which the user may create, drop, alter or query underlying
    * databases, tables, functions etc.
+    *
+    * 通过这些函数，我们可以创建，删除，修改，或查询数据库和表，或则表结构。
    *
    * @since 2.0.0
    */
@@ -612,6 +632,7 @@ class SparkSession private(
 
   /**
    * Returns the specified table/view as a `DataFrame`.
+    * 返回特定的表/视图，作为一个DataFrame。
    *
    * @param tableName is either a qualified or unqualified name that designates a table or view.
    *                  If a database is specified, it identifies the table/view from the database.
