@@ -485,10 +485,15 @@ class SparkSession private(
   @Experimental
   @InterfaceStability.Evolving
   def createDataset[T : Encoder](data: Seq[T]): Dataset[T] = {
+    // 返回一个编码器，可以用来对spark sql的行数据进行序列化/反序列化操作。
     val enc = encoderFor[T]
+    // 获取逻辑计划节点的属性
     val attributes = enc.schema.toAttributes
+    // 使用编码器对数据行进行编码
     val encoded = data.map(d => enc.toRow(d).copy())
+    // 创建一个从本地计划扫描数据的逻辑计划
     val plan = new LocalRelation(attributes, encoded)
+    // 通过Dataset的伴生对象作为工厂来创建Dataset。把第一个逻辑计划
     Dataset[T](self, plan)
   }
 

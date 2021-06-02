@@ -415,6 +415,7 @@ class Dataset[T] private[sql](
    * strongly typed objects that Dataset operations work on, a Dataframe returns generic [[Row]]
    * objects that allow fields to be accessed by ordinal or name.
    *
+    * 把强类型的数据集转换成一般意义的数据集：Dataframe。Dataframe是DataSet的列。
    * @group basic
    * @since 1.6.0
    */
@@ -494,6 +495,7 @@ class Dataset[T] private[sql](
   /**
    * Prints the plans (logical and physical) to the console for debugging purposes.
    *
+    * 打印出逻辑和物理计划。
    * @group basic
    * @since 1.6.0
    */
@@ -509,6 +511,7 @@ class Dataset[T] private[sql](
   /**
    * Prints the physical plan to the console for debugging purposes.
    *
+    * 在终端打印出物理执行计划。注意：只打印物理执行计划。
    * @group basic
    * @since 1.6.0
    */

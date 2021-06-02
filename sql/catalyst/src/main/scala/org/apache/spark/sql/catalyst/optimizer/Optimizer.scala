@@ -34,12 +34,14 @@ import org.apache.spark.util.Utils
 /**
  * Abstract class all optimizers should inherit of, contains the standard batches (extending
  * Optimizers can override this.
+  * 所有优化器都应该继承的抽象类，包含标准批次（扩展优化器可以覆盖它）。
  */
 abstract class Optimizer(sessionCatalog: SessionCatalog)
   extends RuleExecutor[LogicalPlan] {
 
   // Check for structural integrity of the plan in test mode. Currently we only check if a plan is
   // still resolved after the execution of each rule.
+  // 在测试模式下检查计划(plan)的结构完整性。 目前我们只检查一个计划执行了每个规则后，是否任然是已经分析的状态。
   override protected def isPlanIntegral(plan: LogicalPlan): Boolean = {
     !Utils.isTesting || plan.resolved
   }
@@ -48,6 +50,7 @@ abstract class Optimizer(sessionCatalog: SessionCatalog)
 
   /**
    * Defines the default rule batches in the Optimizer.
+    * 优化器中默认的规则集
    *
    * Implementations of this class should override this method, and [[nonExcludableRules]] if
    * necessary, instead of [[batches]]. The rule batches that eventually run in the Optimizer,
@@ -471,7 +474,12 @@ object LimitPushDown extends Rule[LogicalPlan] {
  * Right now, Union means UNION ALL, which does not de-duplicate rows. So, it is
  * safe to pushdown Filters and Projections through it. Filter pushdown is handled by another
  * rule PushDownPredicate. Once we add UNION DISTINCT, we will not be able to pushdown Projections.
+  *
+  * 将 Project 运算符推到 Union 运算符的两侧。下面列出了可以安全下推的操作。
+  * union: 目前，Union表示UNION ALL，它不会去重复行。 因此，通过它下推过滤器(Filters)和投影(Projections)是安全的。
+  * 过滤器下推由另一个规则 PushDownPredicate 处理。 一旦我们添加了 UNION DISTINCT，我们将无法下推投影。
  */
+
 object PushProjectionThroughUnion extends Rule[LogicalPlan] with PredicateHelper {
 
   /**
@@ -486,6 +494,8 @@ object PushProjectionThroughUnion extends Rule[LogicalPlan] with PredicateHelper
    * Rewrites an expression so that it can be pushed to the right side of a
    * Union or Except operator. This method relies on the fact that the output attributes
    * of a union/intersect/except are always equal to the left child's output.
+    * 重写一个表达式，以便它可以被推到联合或例外运算符的右侧。
+    * 此方法依赖于联合/相交/除外的输出属性始终等于左孩子的输出这一事实。
    */
   private def pushToRight[A <: Expression](e: A, rewrites: AttributeMap[Attribute]) = {
     val result = e transform {
@@ -1137,6 +1147,10 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
  * attributes of the left or right side of sub query when applicable.
  *
  * Check https://cwiki.apache.org/confluence/display/Hive/OuterJoinBehavior for more details
+  *
+  * 下推 [[Filter]] 运算符，其中的'条件'仅可以使用联接左侧或右侧的属性进行评估。
+  * 其他 [[Filter]] 条件移到 [[Join]] 的 `condition` 中。
+  *
  */
 object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
   /**

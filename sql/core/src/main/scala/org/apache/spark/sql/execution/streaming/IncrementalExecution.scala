@@ -21,15 +21,13 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.spark.internal.Logging
-import org.apache.spark.sql.{AnalysisException, SparkSession, Strategy}
 import org.apache.spark.sql.catalyst.expressions.{CurrentBatchTimestamp, ExpressionWithRandomSeed}
 import org.apache.spark.sql.catalyst.plans.logical._
-import org.apache.spark.sql.catalyst.plans.physical.{AllTuples, ClusteredDistribution, HashPartitioning, SinglePartition}
 import org.apache.spark.sql.catalyst.rules.Rule
 import org.apache.spark.sql.execution.{QueryExecution, SparkPlan, SparkPlanner, UnaryExecNode}
-import org.apache.spark.sql.execution.exchange.ShuffleExchangeExec
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.streaming.OutputMode
+import org.apache.spark.sql.{SparkSession, Strategy}
 import org.apache.spark.util.Utils
 
 /**
@@ -55,6 +53,7 @@ class IncrementalExecution(
       extraPlanningStrategies ++
       sparkSession.sessionState.planner.strategies
 
+    // 若是流执行环境，还需要添加一下策略
     override def extraPlanningStrategies: Seq[Strategy] =
       StreamingJoinStrategy ::
       StatefulAggregationStrategy ::

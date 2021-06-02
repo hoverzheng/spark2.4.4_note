@@ -58,6 +58,9 @@ object SimpleAnalyzer extends Analyzer(
  * of analysis environment from the catalog.
  * The state that is kept here is per-query.
  *
+  * 提供一种在分析过程中保持状态的方法，这使我们能够将分析环境的关注点与目录分离。
+  * 此处保存的状态是每个查询。
+  *
  * Note this is thread local.
  *
  * @param defaultDatabase The default database used in the view resolution, this overrules the
@@ -92,7 +95,7 @@ object AnalysisContext {
  * Provides a logical query plan analyzer, which translates [[UnresolvedAttribute]]s and
  * [[UnresolvedRelation]]s into fully typed objects using information in a [[SessionCatalog]].
   * 提供一个逻辑查询计划分析器。
-  * 它使用[[SessionCatalog]]中的信息将[[UnresolvedAttribute]]和[[UnresolvedRelation]]转换为完全类型化的对象。
+  * 它使用[[SessionCatalog]]中的信息将没分析的属性[[UnresolvedAttribute]]和没分析的关系[[UnresolvedRelation]]转换为完全类型化的对象。
  */
 class Analyzer(
     catalog: SessionCatalog,
@@ -104,6 +107,7 @@ class Analyzer(
     this(catalog, conf, conf.optimizerMaxIterations)
   }
 
+  // 分析逻辑计划
   def executeAndCheck(plan: LogicalPlan): LogicalPlan = AnalysisHelper.markInAnalyzer {
     val analyzed = execute(plan)
     try {
@@ -2546,6 +2550,11 @@ object EliminateUnions extends Rule[LogicalPlan] {
  * Window(window expressions). Notice that if an expression has other expression parameters which
  * are not in its `children`, e.g. `RuntimeReplaceable`, the transformation for Aliases in this
  * rule can't work for those parameters.
+  *
+  * 清除计划内不必要的别名(Aliases)。
+  * 基本上我们只需要别名作为项目（项目列表）或聚合（聚合表达式）或窗口（窗口表达式）中的顶级表达式。
+  * 请注意，如果表达式具有其他不在其“子级”中的表达式参数，例如 `RuntimeReplaceable`，
+  * 此规则中的别名转换不适用于这些参数。
  */
 object CleanupAliases extends Rule[LogicalPlan] {
   private def trimAliases(e: Expression): Expression = {

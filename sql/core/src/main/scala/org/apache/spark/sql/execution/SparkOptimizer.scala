@@ -43,7 +43,8 @@ class SparkOptimizer(
 
   /**
    * Optimization batches that are executed before the regular optimization batches (also before
-   * the finish analysis batch).
+    * * the finish analysis batch).
+    * 在常规优化批次之前（也在完成分析批次之前）执行的优化批次。
    */
   def preOptimizationBatches: Seq[Batch] = Nil
 
@@ -51,6 +52,8 @@ class SparkOptimizer(
    * Optimization batches that are executed after the regular optimization batches, but before the
    * batch executing the [[ExperimentalMethods]] optimizer rules. This hook can be used to add
    * custom optimizer batches to the Spark optimizer.
+    * 在常规优化批次之后但在执行 [[ExperimentalMethods]] 优化器规则的批次之前执行的优化批次。
+    * 此挂钩可用于将自定义优化器批次添加到 Spark 优化器。
    */
    def postHocOptimizationBatches: Seq[Batch] = Nil
 }

@@ -135,6 +135,7 @@ abstract class LogicalPlan
 
 /**
  * A logical plan node with no children.
+  * 没有儿子节点的逻辑计划
  */
 abstract class LeafNode extends LogicalPlan {
   override final def children: Seq[LogicalPlan] = Nil
@@ -146,7 +147,7 @@ abstract class LeafNode extends LogicalPlan {
 
 /**
  * A logical plan node with single child.
-  * 只有一个儿子的逻辑执行计划。
+  * 只有一个儿子的逻辑计划节点。
  */
 abstract class UnaryNode extends LogicalPlan {
   def child: LogicalPlan
@@ -180,6 +181,7 @@ abstract class UnaryNode extends LogicalPlan {
 
 /**
  * A logical plan node with a left and right child.
+  * 带有左右儿子节点的逻辑计划
  */
 abstract class BinaryNode extends LogicalPlan {
   def left: LogicalPlan

@@ -49,6 +49,7 @@ object LocalRelation {
  *
  * @param data The local collection holding the data. It doesn't need to be sent to executors
  *             and then doesn't need to be serializable.
+  * 逻辑计划节点，从本地集合扫描数据
  */
 case class LocalRelation(
     output: Seq[Attribute],

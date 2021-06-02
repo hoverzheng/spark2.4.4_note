@@ -27,11 +27,13 @@ object RuleExecutor {
   protected val queryExecutionMeter = QueryExecutionMetering()
 
   /** Dump statistics about time spent running specific rules. */
+  // 输出特定rule时间消耗的统计值
   def dumpTimeSpent(): String = {
     queryExecutionMeter.dumpTimeSpent()
   }
 
   /** Resets statistics about time spent running specific rules */
+  // 重置运行特定rule时间消耗的统计值
   def resetMetrics(): Unit = {
     queryExecutionMeter.resetMetrics()
   }
@@ -43,12 +45,15 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
    * An execution strategy for rules that indicates the maximum number of executions. If the
    * execution reaches fix point (i.e. converge) before maxIterations, it will stop.
    */
+  // 指示最大执行次数的规则的执行策略。 如果执行在maxIterations次数之前达到固定点（即收敛），它将停止。
   abstract class Strategy { def maxIterations: Int }
 
   /** A strategy that only runs once. */
+  // 仅执行一次的策略
   case object Once extends Strategy { val maxIterations = 1 }
 
   /** A strategy that runs until fix point or maxIterations times, whichever comes first. */
+  // 运行到fix点或最大次数停止的策略
   case class FixedPoint(maxIterations: Int) extends Strategy
 
   /** A batch of rules. */
@@ -56,7 +61,7 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
   protected case class Batch(name: String, strategy: Strategy, rules: Rule[TreeType]*)
 
   /** Defines a sequence of rule batches, to be overridden by the implementation. */
-  // 一系列规则集，需要实现覆盖
+  // 一系列规则集，由实现类覆盖写
   protected def batches: Seq[Batch]
 
   /**
@@ -64,6 +69,8 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
    * of each rule. For example, we can check whether a plan is still resolved after each rule in
    * `Optimizer`, so we can catch rules that return invalid plans. The check function returns
    * `false` if the given plan doesn't pass the structural integrity check.
+    * 定义检查函数，用来检查执行每个rule后，plan的整体结构的完整性。
+    * 例如，我们检查是否一个plan任然可以被解析，当执行Optimizer的每个规则后。这样，我就可以找出返回非法plan的规则。
    */
   protected def isPlanIntegral(plan: TreeType): Boolean = true
 
@@ -85,6 +92,7 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
 
       // Run until fix point (or the max number of iterations as specified in the strategy.
       while (continue) {
+        // 遍历batch的rule，通过多个rule来处理plan，并得到最终结果
         curPlan = batch.rules.foldLeft(curPlan) {
           case (plan, rule) =>
             val startTime = System.nanoTime()
@@ -111,7 +119,8 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
             }
 
             result
-        }
+        } // 完成batchs中rule的遍历和应用
+
         iteration += 1
         if (iteration > batch.strategy.maxIterations) {
           // Only log if this is a rule that is supposed to run more than once.

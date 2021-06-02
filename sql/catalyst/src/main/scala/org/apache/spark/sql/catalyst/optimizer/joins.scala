@@ -34,6 +34,11 @@ import org.apache.spark.sql.internal.SQLConf
  * The order of joins will not be changed if all of them already have at least one condition.
  *
  * If star schema detection is enabled, reorder the star join plans based on heuristics.
+  *
+  * 重新排序join并将所有条件推入join，以便底部的至少有一个条件。
+  * 如果所有join都至少具有一个条件，则join的顺序不会更改。
+  * 如果启用了星型模式检测，则根据启发式对星型联接计划重新排序。
+  *
  */
 object ReorderJoin extends Rule[LogicalPlan] with PredicateHelper {
   /**
@@ -43,6 +48,12 @@ object ReorderJoin extends Rule[LogicalPlan] with PredicateHelper {
    *
    * @param input a list of LogicalPlans to inner join and the type of inner join.
    * @param conditions a list of condition for join.
+    *
+    * 将计划列表合并在一起，并将条件推入其中。
+    * join的计划从左到右挑选，最好至少有一个加入条件。
+    * 参数input：一个LogicalPlans的列表，这些逻辑计划是inner join或类似于inner join。
+    * 参数conditions：join的条件列表
+    *
    */
   @tailrec
   final def createOrderedJoin(input: Seq[(LogicalPlan, InnerLike)], conditions: Seq[Expression])

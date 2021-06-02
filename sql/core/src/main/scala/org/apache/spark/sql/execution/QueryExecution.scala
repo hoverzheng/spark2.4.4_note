@@ -54,19 +54,23 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
     }
   }
 
+  //分析逻辑计划
   lazy val analyzed: LogicalPlan = {
     SparkSession.setActiveSession(sparkSession)
     sparkSession.sessionState.analyzer.executeAndCheck(logical)
   }
 
+  // 缓存逻辑计划
   lazy val withCachedData: LogicalPlan = {
     assertAnalyzed()
     assertSupported()
     sparkSession.sharedState.cacheManager.useCachedData(analyzed)
   }
 
+  // 优化逻辑计划
   lazy val optimizedPlan: LogicalPlan = sparkSession.sessionState.optimizer.execute(withCachedData)
 
+  // 生成物理计划
   lazy val sparkPlan: SparkPlan = {
     SparkSession.setActiveSession(sparkSession)
     // TODO: We use next(), i.e. take the first plan returned by the planner, here for now,
@@ -76,6 +80,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
 
   // executedPlan should not be used to initialize any SparkPlan. It should be
   // only used for execution.
+  // 优化(调整)物理计划
   lazy val executedPlan: SparkPlan = prepareForExecution(sparkPlan)
 
   /** Internal version of the RDD. Avoids copies and has no schema */
@@ -233,6 +238,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
   }
 
   /** A special namespace for commands that can be used to debug query execution. */
+  // 用来调试查询的执行
   // scalastyle:off
   object debug {
   // scalastyle:on
