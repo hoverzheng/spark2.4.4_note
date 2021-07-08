@@ -1,68 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dbd805c2-7941-43fc-a899-3c7f4685947c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/HeartbeatReceiver.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/HeartbeatReceiver.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/MapOutputTracker.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/MapOutputTracker.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/Partitioner.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/Partitioner.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/SparkContext.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/SparkContext.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/broadcast/TorrentBroadcast.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/broadcast/TorrentBroadcast.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/Executor.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/Executor.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/ExecutorBackend.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/executor/ExecutorBackend.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/rdd/RDD.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/rdd/RDD.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/rdd/RDDOperationScope.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/rdd/RDDOperationScope.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/rdd/ReliableCheckpointRDD.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/rdd/ReliableCheckpointRDD.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/TaskSchedulerImpl.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/java/org/apache/spark/sql/catalyst/expressions/ExpressionInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/java/org/apache/spark/sql/catalyst/expressions/ExpressionInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/analysis/Analyzer.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/analysis/Analyzer.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/analysis/FunctionRegistry.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/analysis/FunctionRegistry.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/analysis/ResolveHints.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/analysis/ResolveHints.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/ExternalCatalog.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/ExternalCatalog.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/InMemoryCatalog.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/InMemoryCatalog.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/SessionCatalog.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/SessionCatalog.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/expressions/subquery.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/expressions/subquery.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/identifiers.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/identifiers.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/Optimizer.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/Optimizer.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/joins.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/joins.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/planning/QueryPlanner.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/planning/QueryPlanner.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/planning/patterns.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/planning/patterns.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/logical/basicLogicalOperators.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/logical/basicLogicalOperators.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/physical/partitioning.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/plans/physical/partitioning.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/rules/RuleExecutor.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/rules/RuleExecutor.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/trees/TreeNode.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/trees/TreeNode.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/internal/StaticSQLConf.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/internal/StaticSQLConf.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/optimizer/JoinReorderSuite.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/optimizer/JoinReorderSuite.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/parser/ExpressionParserSuite.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/parser/ExpressionParserSuite.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/java/org/apache/spark/sql/sources/v2/DataSourceV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/java/org/apache/spark/sql/sources/v2/DataSourceV2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/Dataset.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/Dataset.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/RelationalGroupedDataset.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/RelationalGroupedDataset.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/SparkSession.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/SparkSession.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/CacheManager.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/CacheManager.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/QueryExecution.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/QueryExecution.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SortExec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SortExec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkOptimizer.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkOptimizer.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkPlan.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkPlan.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkPlanInfo.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkPlanInfo.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkPlanner.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkPlanner.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/SparkStrategies.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/basicPhysicalOperators.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/basicPhysicalOperators.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/columnar/InMemoryRelation.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/columnar/InMemoryRelation.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/command/commands.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/command/commands.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/command/views.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/command/views.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/EnsureRequirements.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/EnsureRequirements.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/Exchange.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/Exchange.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/ShuffleExchangeExec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/exchange/ShuffleExchangeExec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/ShuffledHashJoinExec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/ShuffledHashJoinExec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/SortMergeJoinExec.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/joins/SortMergeJoinExec.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/subquery.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/subquery.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/expressions/UserDefinedFunction.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/expressions/UserDefinedFunction.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/internal/SessionState.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/internal/SessionState.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/internal/SharedState.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/internal/SharedState.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/hive/src/main/scala/org/apache/spark/sql/hive/HiveExternalCatalog.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/hive/src/main/scala/org/apache/spark/sql/hive/HiveExternalCatalog.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/hive/src/main/scala/org/apache/spark/sql/hive/HiveSessionStateBuilder.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/hive/src/main/scala/org/apache/spark/sql/hive/HiveSessionStateBuilder.scala" afterDir="false" />
-    </list>
+    <list default="true" id="dbd805c2-7941-43fc-a899-3c7f4685947c" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/launcher/target/" />
     <ignored path="$PROJECT_DIR$/tools/target/" />
@@ -231,7 +170,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>RepartitionByExpression</find>
       <find>newPartitioning</find>
       <find>maxi</find>
       <find>ResolveRelations</find>
@@ -261,6 +199,7 @@
       <find>ExtractFiltersAndInnerJoins</find>
       <find>explicitCartesian</find>
       <find>DeltaTableV2</find>
+      <find>executeVacuum</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -917,12 +856,12 @@
       <workItem from="1625709835333" duration="6591000" />
       <workItem from="1625731092448" duration="140000" />
       <workItem from="1625731308691" duration="932000" />
-      <workItem from="1625733081790" duration="245000" />
+      <workItem from="1625733081790" duration="459000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1761768000" />
+    <option name="totallyTimeSpent" value="1761982000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
