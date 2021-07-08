@@ -36,6 +36,9 @@ import org.apache.spark.sql.types.DataType
  * }}}
  *
  * @since 1.3.0
+  *
+  *  用户自定义的UDF。通过functions中的udf函数来创建。
+  *  用户通过udf函数注册后，会得到一个这样的对象。
  */
 @InterfaceStability.Stable
 case class UserDefinedFunction protected[sql] (
@@ -55,6 +58,7 @@ case class UserDefinedFunction protected[sql] (
    * Returns true when the UDF can return a nullable value.
    *
    * @since 2.3.0
+    * 是否允许该udf返回空值
    */
   def nullable: Boolean = _nullable
 
@@ -63,6 +67,8 @@ case class UserDefinedFunction protected[sql] (
    * input.
    *
    * @since 2.3.0
+    *
+    *  返回是否UDF是确定的，也就是说同样的输入是否会产生同样的输出。
    */
   def deterministic: Boolean = _deterministic
 
@@ -70,6 +76,8 @@ case class UserDefinedFunction protected[sql] (
    * Returns an expression that invokes the UDF, using the given arguments.
    *
    * @since 1.3.0
+    *
+    * 当调用UDF时返回一个表达式，并使用所给参数
    */
   @scala.annotation.varargs
   def apply(exprs: Column*): Column = {
@@ -78,6 +86,7 @@ case class UserDefinedFunction protected[sql] (
     if (nullableTypes.isEmpty) {
       nullableTypes = Some(ScalaReflection.getParameterTypeNullability(f))
     }
+    // 定义了参数的数据类型
     if (inputTypes.isDefined) {
       assert(inputTypes.get.length == nullableTypes.get.length)
     }
@@ -106,6 +115,7 @@ case class UserDefinedFunction protected[sql] (
    * Updates UserDefinedFunction with a given name.
    *
    * @since 2.3.0
+    * 为UDF重新取一个名字
    */
   def withName(name: String): UserDefinedFunction = {
     val udf = copyAll()

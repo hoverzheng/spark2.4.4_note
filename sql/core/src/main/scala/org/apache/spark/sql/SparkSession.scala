@@ -888,6 +888,7 @@ object SparkSession extends Logging {
      *
      * @since 2.0.0
      */
+    // 启用Hive支持，包括连接到hive保存元数据的存储系统。
     def enableHiveSupport(): Builder = synchronized {
       if (hiveClassesArePresent) {
         config(CATALOG_IMPLEMENTATION.key, "hive")

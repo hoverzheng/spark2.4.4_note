@@ -43,6 +43,9 @@ sealed trait ViewType {
  * session that created it, i.e. it will be automatically dropped when the session terminates. It's
  * not tied to any databases, i.e. we can't use `db1.view1` to reference a local temporary view.
  */
+// LocalTempView 表示会话范围的本地临时视图。
+// 它的生命周期是创建它的会话的生命周期，即它会在会话终止时自动删除。
+// 它不绑定到任何数据库，即我们不能使用 `db1.view1` 来引用本地临时视图。
 object LocalTempView extends ViewType
 
 /**
@@ -84,6 +87,8 @@ object PersistedView extends ViewType
  *                already exists, throws analysis exception.
  * @param viewType the expected view type to be created with this command.
  */
+// 使用给定的查询计划创建或替换视图。
+// 如果我们需要创建永久视图，此命令将生成一些特定于视图的属性（例如查看默认数据库、查看查询输出列名称）并将它们作为属性存储在 Metastore 中。
 case class CreateViewCommand(
     name: TableIdentifier,
     userSpecifiedColumns: Seq[(String, Option[String])],
@@ -100,6 +105,7 @@ case class CreateViewCommand(
 
   override protected def innerChildren: Seq[QueryPlan[_]] = Seq(child)
 
+  // 是否是persist 视图
   if (viewType == PersistedView) {
     require(originalText.isDefined, "'originalText' must be provided to create permanent view")
   }
@@ -108,6 +114,7 @@ case class CreateViewCommand(
     throw new AnalysisException("CREATE VIEW with both IF NOT EXISTS and REPLACE is not allowed.")
   }
 
+  // 是否是临时视图
   private def isTemporary = viewType == LocalTempView || viewType == GlobalTempView
 
   // Disallows 'CREATE TEMPORARY VIEW IF NOT EXISTS' to be consistent with 'CREATE TEMPORARY TABLE'
@@ -117,6 +124,7 @@ case class CreateViewCommand(
   }
 
   // Temporary view names should NOT contain database prefix like "database.table"
+  // 临时视图不应该包括数据库名
   if (isTemporary && name.database.isDefined) {
     val database = name.database.get
     throw new AnalysisException(
@@ -125,6 +133,7 @@ case class CreateViewCommand(
 
   override def run(sparkSession: SparkSession): Seq[Row] = {
     // If the plan cannot be analyzed, throw an exception and don't proceed.
+    // 分析逻辑计划
     val qe = sparkSession.sessionState.executePlan(child)
     qe.assertAnalyzed()
     val analyzedPlan = qe.analyzed
@@ -141,13 +150,15 @@ case class CreateViewCommand(
     verifyTemporaryObjectsNotExists(sparkSession)
 
     val catalog = sparkSession.sessionState.catalog
-    if (viewType == LocalTempView) {
+    if (viewType == LocalTempView) { // 创建本地临时视图
+      // 分区逻辑计划，按规则对对列名进行处理
       val aliasedPlan = aliasPlan(sparkSession, analyzedPlan)
+      // 送入创建临时视图的逻辑计划是分析过的
       catalog.createTempView(name.table, aliasedPlan, overrideIfExists = replace)
-    } else if (viewType == GlobalTempView) {
+    } else if (viewType == GlobalTempView) { // 全局临时视图
       val aliasedPlan = aliasPlan(sparkSession, analyzedPlan)
       catalog.createGlobalTempView(name.table, aliasedPlan, overrideIfExists = replace)
-    } else if (catalog.tableExists(name)) {
+    } else if (catalog.tableExists(name)) { // 判断表是否存在
       val tableMetadata = catalog.getTableMetadata(name)
       if (allowExisting) {
         // Handles `CREATE VIEW IF NOT EXISTS v0 AS SELECT ...`. Does nothing when the target view
@@ -208,6 +219,8 @@ case class CreateViewCommand(
   /**
    * If `userSpecifiedColumns` is defined, alias the analyzed plan to the user specified columns,
    * else return the analyzed plan directly.
+    *
+    * 如果定义了`userSpecifiedColumns`，则将分析的计划别名为用户指定的列，否则直接返回分析的计划。
    */
   private def aliasPlan(session: SparkSession, analyzedPlan: LogicalPlan): LogicalPlan = {
     if (userSpecifiedColumns.isEmpty) {

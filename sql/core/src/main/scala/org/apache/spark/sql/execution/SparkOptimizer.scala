@@ -24,6 +24,7 @@ import org.apache.spark.sql.execution.datasources.PruneFileSourcePartitions
 import org.apache.spark.sql.execution.datasources.parquet.ParquetSchemaPruning
 import org.apache.spark.sql.execution.python.{ExtractPythonUDFFromAggregate, ExtractPythonUDFs}
 
+// 逻辑计划的优化器
 class SparkOptimizer(
     catalog: SessionCatalog,
     experimentalMethods: ExperimentalMethods)

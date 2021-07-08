@@ -488,20 +488,26 @@ abstract class RDD[T: ClassTag](
                partitionCoalescer: Option[PartitionCoalescer] = Option.empty)
               (implicit ord: Ordering[T] = null)
       : RDD[T] = withScope {
+    // 分区数必须>0
     require(numPartitions > 0, s"Number of partitions ($numPartitions) must be positive.")
+    // 需要shuffle过程，可能是repartition
     if (shuffle) {
       /** Distributes elements evenly across output partitions, starting from a random partition. */
+      // 通过输出的分区来分发元素，从任意一个分区开始
       val distributePartition = (index: Int, items: Iterator[T]) => {
+        // 返回任意一个分区号
         var position = new Random(hashing.byteswap32(index)).nextInt(numPartitions)
         items.map { t =>
           // Note that the hash code of the key will just be the key itself. The HashPartitioner
           // will mod it with the number of total partitions.
+          // 请注意，密钥的哈希码将只是密钥本身。 HashPartitioner 将使用总分区数对其进行修改。
           position = position + 1
           (position, t)
         }
       } : Iterator[(Int, T)]
 
       // include a shuffle step so that our upstream tasks are still distributed
+      // 包括一个 shuffle 步骤，以便我们的上游任务仍然是分布式的
       new CoalescedRDD(
         new ShuffledRDD[Int, T, T](
           mapPartitionsWithIndexInternal(distributePartition, isOrderSensitive = true),
@@ -855,6 +861,8 @@ abstract class RDD[T: ClassTag](
    * @param isOrderSensitive whether or not the function is order-sensitive. If it's order
    *                         sensitive, it may return totally different result when the input order
    *                         is changed. Mostly stateful functions are order-sensitive.
+    *  [性能] Spark 的内部 mapPartitionsWithIndex 方法跳过了闭包清理。
+    *  只有当我们确定 RDD 元素是可序列化的并且不需要闭包清理时，才需要谨慎使用它是一个性能 API。
    */
   private[spark] def mapPartitionsWithIndexInternal[U: ClassTag](
       f: (Int, Iterator[T]) => Iterator[U],
@@ -1083,6 +1091,7 @@ abstract class RDD[T: ClassTag](
 
   /**
    * Reduces the elements of this RDD in a multi-level tree pattern.
+    * 按多层次数的模式来减少RDD的元素。
    *
    * @param depth suggested depth of the tree (default: 2)
    * @see [[org.apache.spark.rdd.RDD#reduce]]
@@ -1466,6 +1475,8 @@ abstract class RDD[T: ClassTag](
    * @param num k, the number of elements to return
    * @param ord the implicit ordering for T
    * @return an array of top elements
+    *
+    *  从RDD中返回前k个值
    */
   def takeOrdered(num: Int)(implicit ord: Ordering[T]): Array[T] = withScope {
     if (num == 0) {

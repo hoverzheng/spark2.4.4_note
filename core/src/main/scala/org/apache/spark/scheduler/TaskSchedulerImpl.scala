@@ -630,6 +630,8 @@ private[spark] class TaskSchedulerImpl(
    * Update metrics for in-progress tasks and let the master know that the BlockManager is still
    * alive. Return true if the driver knows about the given block manager. Otherwise, return false,
    * indicating that the block manager should re-register.
+    * 更新正在进行的任务的指标，并让主节点知道 BlockManager 还活着。
+    * 如果驱动程序知道给定的块管理器，则返回 true。 否则返回false，表示块管理器应该重新注册。
    */
   override def executorHeartbeatReceived(
       execId: String,

@@ -74,7 +74,9 @@ private[sql] object Dataset {
   }
 
   def ofRows(sparkSession: SparkSession, logicalPlan: LogicalPlan): DataFrame = {
+    // 获取一个qe，并分析逻辑计划
     val qe = sparkSession.sessionState.executePlan(logicalPlan)
+    // 判断逻辑计划是否已经
     qe.assertAnalyzed()
     new Dataset[Row](sparkSession, qe, RowEncoder(qe.analyzed.schema))
   }
@@ -1569,6 +1571,7 @@ class Dataset[T] private[sql](
    * @group untypedrel
    * @since 2.0.0
    */
+  // 基本的聚合操作
   @scala.annotation.varargs
   def groupBy(cols: Column*): RelationalGroupedDataset = {
     RelationalGroupedDataset(toDF(), cols.map(_.expr), RelationalGroupedDataset.GroupByType)
@@ -2985,6 +2988,7 @@ class Dataset[T] private[sql](
    * @group basic
    * @since 1.6.0
    */
+  // 使用默认的memory_and_disk来缓存该数据集
   def persist(): this.type = {
     sparkSession.sharedState.cacheManager.cacheQuery(this)
     this
@@ -2995,6 +2999,8 @@ class Dataset[T] private[sql](
    *
    * @group basic
    * @since 1.6.0
+    *
+    * 使用默认级别来缓存Dataset。注意：默认级别是MEMORY_AND_DISK。
    */
   def cache(): this.type = persist()
 
@@ -3119,6 +3125,8 @@ class Dataset[T] private[sql](
    * @group basic
    * @since 2.0.0
    */
+  // 创建一个本地的临时视图。该视图的生命周期和SparkSession绑定。
+  // 注意：若相同名称的视图已存在，则会替换已存在的视图
   def createOrReplaceTempView(viewName: String): Unit = withPlan {
     createTempViewCommand(viewName, replace = true, global = false)
   }
@@ -3158,17 +3166,22 @@ class Dataset[T] private[sql](
     createTempViewCommand(viewName, replace = true, global = true)
   }
 
+  // 通过该函数来创建临时表
   private def createTempViewCommand(
       viewName: String,
       replace: Boolean,
       global: Boolean): CreateViewCommand = {
+    // 全局还是本地视图
     val viewType = if (global) GlobalTempView else LocalTempView
 
+    // 创建一个表的标识对象
     val tableIdentifier = try {
       sparkSession.sessionState.sqlParser.parseTableIdentifier(viewName)
     } catch {
       case _: ParseException => throw new AnalysisException(s"Invalid view name: $viewName")
     }
+
+    // 创建视图对应的类
     CreateViewCommand(
       name = tableIdentifier,
       userSpecifiedColumns = Nil,

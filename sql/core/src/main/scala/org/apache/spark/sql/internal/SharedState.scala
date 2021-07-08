@@ -20,13 +20,8 @@ package org.apache.spark.sql.internal
 import java.net.URL
 import java.util.Locale
 
-import scala.reflect.ClassTag
-import scala.util.control.NonFatal
-
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory
-
-import org.apache.spark.{SparkConf, SparkContext, SparkException}
 import org.apache.spark.internal.Logging
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.catalyst.catalog._
@@ -34,7 +29,11 @@ import org.apache.spark.sql.execution.CacheManager
 import org.apache.spark.sql.execution.ui.{SQLAppStatusListener, SQLAppStatusStore, SQLTab}
 import org.apache.spark.sql.internal.StaticSQLConf._
 import org.apache.spark.status.ElementTrackingStore
-import org.apache.spark.util.{MutableURLClassLoader, Utils}
+import org.apache.spark.util.Utils
+import org.apache.spark.{SparkConf, SparkContext, SparkException}
+
+import scala.reflect.ClassTag
+import scala.util.control.NonFatal
 
 
 /**
@@ -82,6 +81,7 @@ private[sql] class SharedState(val sparkContext: SparkContext) extends Logging {
 
   /**
    * Class for caching query results reused in future executions.
+    * 缓存查询的结果，会在将来的执行中使用。
    */
   val cacheManager: CacheManager = new CacheManager
 

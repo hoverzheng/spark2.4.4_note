@@ -33,6 +33,7 @@ object StaticSQLConf {
     .stringConf
     .createWithDefault(Utils.resolveURI("spark-warehouse").toString)
 
+  // 启用Hive支持后，该参数的值设置成hive
   val CATALOG_IMPLEMENTATION = buildStaticConf("spark.sql.catalogImplementation")
     .internal()
     .stringConf

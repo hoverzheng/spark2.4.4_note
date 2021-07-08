@@ -91,6 +91,8 @@ object PhysicalOperation extends PredicateHelper {
 /**
  * A pattern that finds joins with equality conditions that can be evaluated using equi-join.
  *
+  * 一种找到具有相等条件的连接的模式，可以使用 equi-join 进行评估。
+  *
  * Null-safe equality will be transformed into equality as joining key (replace null with default
  * value).
  */
@@ -104,13 +106,16 @@ object ExtractEquiJoinKeys extends Logging with PredicateHelper {
       logDebug(s"Considering join on: $condition")
       // Find equi-join predicates that can be evaluated before the join, and thus can be used
       // as join keys.
+      // 在And表达式点（如果有的话）拆分条件以获得谓词表达式列表。
       val predicates = condition.map(splitConjunctivePredicates).getOrElse(Nil)
       val joinKeys = predicates.flatMap {
+        // 查找EqualTo和EqualNullSafe，二元表达式来获取连接键（左侧和右侧）。
         case EqualTo(l, r) if l.references.isEmpty || r.references.isEmpty => None
         case EqualTo(l, r) if canEvaluate(l, left) && canEvaluate(r, right) => Some((l, r))
         case EqualTo(l, r) if canEvaluate(l, right) && canEvaluate(r, left) => Some((r, l))
         // Replace null with default value for joining key, then those rows with null in it could
         // be joined together
+          // 对于join的key，使用默认值代替空值。然后这些空值会被join到一起。
         case EqualNullSafe(l, r) if canEvaluate(l, left) && canEvaluate(r, right) =>
           Some((Coalesce(Seq(l, Literal.default(l.dataType))),
             Coalesce(Seq(r, Literal.default(r.dataType)))))
@@ -193,6 +198,13 @@ object ExtractFiltersAndInnerJoins extends PredicateHelper {
  *  - The computation of the aggregations themselves is separated from the final result. For
  *    example, the `count` in `count + 1` will be split into an [[AggregateExpression]] and a final
  *    computation that computes `count.resultAttribute + 1`.
+  *
+  *  规划聚合的物理执行时使用的提取器。 与逻辑聚合相比，执行以下转换：
+  * - 命名未命名的分组表达式，以便可以跨聚合阶段引用它们
+  * - 对多次出现的聚合进行重复数据删除。
+  * - 聚合本身的计算与最终结果分开。
+  *  例如，`count + 1` 中的 `count` 将被拆分为 [[AggregateExpression]] 和计算 `count.resultAttribute + 1` 的最终计算。
+  *
  */
 object PhysicalAggregation {
   // groupingExpressions, aggregateExpressions, resultExpressions, child

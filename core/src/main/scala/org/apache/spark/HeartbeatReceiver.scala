@@ -33,6 +33,9 @@ import org.apache.spark.util._
  * components to convey liveness or execution information for in-progress tasks. It will also
  * expire the hosts that have not heartbeated for more than spark.network.timeout.
  * spark.executor.heartbeatInterval should be significantly less than spark.network.timeout.
+  *
+  * 从Executor到Driver的心跳。 这是几个内部组件使用的共享消息，用于传达正在进行的任务的活跃度或执行信息。
+  * 它还将使心跳超过 spark.network.timeout 的主机过期。 spark.executor.heartbeatInterval 应该明显小于 spark.network.timeout。
  */
 private[spark] case class Heartbeat(
     executorId: String,
@@ -54,7 +57,8 @@ private case class ExecutorRemoved(executorId: String)
 private[spark] case class HeartbeatResponse(reregisterBlockManager: Boolean)
 
 /**
- * Lives in the driver to receive heartbeats from executors..
+ * Lives in the driver to receive heartbeats from executors.
+  * 在driver端运行，为了接收来自executor的心跳信息。
  */
 private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
   extends SparkListener with ThreadSafeRpcEndpoint with Logging {
@@ -70,6 +74,7 @@ private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
   private[spark] var scheduler: TaskScheduler = null
 
   // executor ID -> timestamp of when the last heartbeat from this executor was received
+  // executor ID到时间戳的对应关系，该时间戳是从该executor接收到最新的心跳时间。
   private val executorLastSeen = new mutable.HashMap[String, Long]
 
   // "spark.network.timeout" uses "seconds", while `spark.storage.blockManagerSlaveTimeoutMs` uses
@@ -93,7 +98,6 @@ private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
     ThreadUtils.newDaemonSingleThreadScheduledExecutor("heartbeat-receiver-event-loop-thread")
 
   private val killExecutorThread = ThreadUtils.newDaemonSingleThreadExecutor("kill-executor-thread")
-
   override def onStart(): Unit = {
     timeoutCheckingTask = eventLoopThread.scheduleAtFixedRate(new Runnable {
       override def run(): Unit = Utils.tryLogNonFatalError {
@@ -102,6 +106,7 @@ private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
     }, 0, checkTimeoutIntervalMs, TimeUnit.MILLISECONDS)
   }
 
+  // 直接接受executor的状态信息
   override def receiveAndReply(context: RpcCallContext): PartialFunction[Any, Unit] = {
 
     // Messages sent and received locally
@@ -119,14 +124,21 @@ private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
       context.reply(true)
 
     // Messages received from executors
+    // 每个executor都会启动一个定时线程来向driver端发送心跳信息。心跳信息中包括了executor的blockManagerId的信息。
     case heartbeat @ Heartbeat(executorId, accumUpdates, blockManagerId) =>
       if (scheduler != null) {
         if (executorLastSeen.contains(executorId)) {
+          // 设置executorId的executor的最后一次心跳时间
           executorLastSeen(executorId) = clock.getTimeMillis()
+          // 启动一个新的线程向executor发送返回信息
           eventLoopThread.submit(new Runnable {
             override def run(): Unit = Utils.tryLogNonFatalError {
+              // 向executor的blockmanager发送心跳信息，探测它是否还存活，
+              // 若不存活需要告诉executor的blockmanager需要重新注册
+              // //todo xh?: 为什么要在这里再注册？开始已经注册了，什么时候注销的？为什么要在注册？
               val unknownExecutor = !scheduler.executorHeartbeatReceived(
                 executorId, accumUpdates, blockManagerId)
+              // 返回executor心跳的信息
               val response = HeartbeatResponse(reregisterBlockManager = unknownExecutor)
               context.reply(response)
             }
@@ -136,6 +148,7 @@ private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
           // after we just removed it. It's not really an error condition so we should
           // not log warning here. Otherwise there may be a lot of noise especially if
           // we explicitly remove executors (SPARK-4134).
+          // 当删除executor后，该executor的心跳信息还在传输，就会发生这种情况。只需要简单的丢弃即可。
           logDebug(s"Received heartbeat from unknown executor $executorId")
           context.reply(HeartbeatResponse(reregisterBlockManager = true))
         }
@@ -143,6 +156,7 @@ private[spark] class HeartbeatReceiver(sc: SparkContext, clock: Clock)
         // Because Executor will sleep several seconds before sending the first "Heartbeat", this
         // case rarely happens. However, if it really happens, log it and ask the executor to
         // register itself again.
+        // 在发送第一个心跳信息时，Executor会睡眠几秒。虽然这很少发生，但一旦发生，可以请求executor再次注册它自己。
         logWarning(s"Dropping $heartbeat because TaskScheduler is not ready yet")
         context.reply(HeartbeatResponse(reregisterBlockManager = true))
       }

@@ -24,6 +24,7 @@ import org.apache.spark.sql.execution.metric.SQLMetricInfo
 /**
  * :: DeveloperApi ::
  * Stores information about a SQL SparkPlan.
+  * 保存关于SparkPlan的SQL的信息。
  */
 @DeveloperApi
 class SparkPlanInfo(

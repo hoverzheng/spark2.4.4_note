@@ -75,6 +75,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
     SparkSession.setActiveSession(sparkSession)
     // TODO: We use next(), i.e. take the first plan returned by the planner, here for now,
     //       but we will implement to choose the best plan.
+    // 目前使用生成的物理计划中的第一个物理计划，但后来会实现从这些物理计划中选出一个最好的物理计划。
     planner.plan(ReturnAnswer(optimizedPlan)).next()
   }
 
@@ -84,7 +85,7 @@ class QueryExecution(val sparkSession: SparkSession, val logical: LogicalPlan) {
   lazy val executedPlan: SparkPlan = prepareForExecution(sparkPlan)
 
   /** Internal version of the RDD. Avoids copies and has no schema */
-    // RDD的内部版本。避免复制，并且也没有schema。
+    // 把优化后的物理计划转换成可执行代码：RDD的内部版本。避免复制，并且也没有schema。
   lazy val toRdd: RDD[InternalRow] = executedPlan.execute()
 
   /**

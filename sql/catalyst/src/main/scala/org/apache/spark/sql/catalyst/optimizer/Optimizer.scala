@@ -244,6 +244,7 @@ abstract class Optimizer(sessionCatalog: SessionCatalog)
    * Implementations of this class should override [[defaultBatches]], and [[nonExcludableRules]]
    * if necessary, instead of this method.
    */
+  // 真正使用的优化规则集
   final override def batches: Seq[Batch] = {
     val excludedRulesConf =
       SQLConf.get.optimizerExcludedRules.toSeq.flatMap(Utils.stringToSeq)
@@ -414,6 +415,7 @@ object RemoveRedundantProject extends Rule[LogicalPlan] {
 
 /**
  * Pushes down [[LocalLimit]] beneath UNION ALL and beneath the streamed inputs of outer joins.
+  * 将 [[LocalLimit]] 下推到 UNION ALL 下方和外连接的流输入下方。
  */
 object LimitPushDown extends Rule[LogicalPlan] {
 
@@ -475,7 +477,7 @@ object LimitPushDown extends Rule[LogicalPlan] {
  * safe to pushdown Filters and Projections through it. Filter pushdown is handled by another
  * rule PushDownPredicate. Once we add UNION DISTINCT, we will not be able to pushdown Projections.
   *
-  * 将 Project 运算符推到 Union 运算符的两侧。下面列出了可以安全下推的操作。
+  * 将投影(Project)运算符推到 Union 运算符的两侧。下面列出了可以安全下推的操作。
   * union: 目前，Union表示UNION ALL，它不会去重复行。 因此，通过它下推过滤器(Filters)和投影(Projections)是安全的。
   * 过滤器下推由另一个规则 PushDownPredicate 处理。 一旦我们添加了 UNION DISTINCT，我们将无法下推投影。
  */
@@ -484,6 +486,7 @@ object PushProjectionThroughUnion extends Rule[LogicalPlan] with PredicateHelper
 
   /**
    * Maps Attributes from the left side to the corresponding Attribute on the right side.
+    * 将左侧的属性映射到右侧的相应属性。
    */
   private def buildRewrites(left: LogicalPlan, right: LogicalPlan): AttributeMap[Attribute] = {
     assert(left.output.size == right.output.size)
@@ -494,8 +497,8 @@ object PushProjectionThroughUnion extends Rule[LogicalPlan] with PredicateHelper
    * Rewrites an expression so that it can be pushed to the right side of a
    * Union or Except operator. This method relies on the fact that the output attributes
    * of a union/intersect/except are always equal to the left child's output.
-    * 重写一个表达式，以便它可以被推到联合或例外运算符的右侧。
-    * 此方法依赖于联合/相交/除外的输出属性始终等于左孩子的输出这一事实。
+    * 重写一个表达式，以便它可以被推到Union或Except运算符的右侧。
+    * 此方法依赖于union/intersect/except的输出属性始终等于左孩子的输出这一事实。
    */
   private def pushToRight[A <: Expression](e: A, rewrites: AttributeMap[Attribute]) = {
     val result = e transform {
@@ -511,17 +514,21 @@ object PushProjectionThroughUnion extends Rule[LogicalPlan] with PredicateHelper
     result.asInstanceOf[A]
   }
 
+  // 后续遍历逻辑计划树，查找父节点是Project，而子节点是Union操作的
   def apply(plan: LogicalPlan): LogicalPlan = plan transform {
 
     // Push down deterministic projection through UNION ALL
     case p @ Project(projectList, Union(children)) =>
       assert(children.nonEmpty)
-      if (projectList.forall(_.deterministic)) {
+      if (projectList.forall(_.deterministic)) {  // 若所有的列名都是确定的
+        // 重新创建Union的子节点，它应该是一个Project节点
         val newFirstChild = Project(projectList, children.head)
+        // 把Project操作设置为其子节点的
         val newOtherChildren = children.tail.map { child =>
           val rewrites = buildRewrites(children.head, child)
           Project(projectList.map(pushToRight(_, rewrites)), child)
         }
+        // union作为父节点
         Union(newFirstChild +: newOtherChildren)
       } else {
         p
@@ -954,6 +961,12 @@ object PruneFilters extends Rule[LogicalPlan] with PredicateHelper {
  * 2) the predicate is deterministic and the operator will not change any of rows.
  *
  * This heuristic is valid assuming the expression evaluation cost is minimal.
+  *
+  * 通过多个运算符推送[[Filter]]运算符 iff：
+  *  1) 运算符是确定性的
+  *  2) 谓词是确定性的，运算符不会更改任何行的数据。
+  *
+  * 假设表达式评估成本最小，此启发式方法是有效的。
  */
 object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
   def apply(plan: LogicalPlan): LogicalPlan = plan transform {
@@ -1100,6 +1113,7 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
       grandchild: LogicalPlan)(insertFilter: Expression => LogicalPlan): LogicalPlan = {
     // Only push down the predicates that is deterministic and all the referenced attributes
     // come from grandchild.
+     // 仅下推这些谓词：确定的，并且所有的属性都来自child
     // TODO: non-deterministic predicates could be pushed through some operators that do not change
     // the rows.
     val (candidates, nonDeterministic) =
@@ -1151,6 +1165,8 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
   * 下推 [[Filter]] 运算符，其中的'条件'仅可以使用联接左侧或右侧的属性进行评估。
   * 其他 [[Filter]] 条件移到 [[Join]] 的 `condition` 中。
   *
+  * 并且还下推join过滤器，其中“条件”可以在适用时仅使用子查询的左侧或右侧的属性进行评估。
+  *
  */
 object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
   /**
@@ -1177,6 +1193,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
       val (leftFilterConditions, rightFilterConditions, commonFilterCondition) =
         split(splitConjunctivePredicates(filterCondition), left, right)
       joinType match {
+          // inner join
         case _: InnerLike =>
           // push down the single side `where` condition into respective sides
           val newLeft = leftFilterConditions.
@@ -1193,6 +1210,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
           } else {
             join
           }
+          // right outer join
         case RightOuter =>
           // push down the right side only `where` condition
           val newLeft = left
@@ -1203,6 +1221,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
 
           (leftFilterConditions ++ commonFilterCondition).
             reduceLeftOption(And).map(Filter(_, newJoin)).getOrElse(newJoin)
+          // left outer join
         case LeftOuter | LeftExistence(_) =>
           // push down the left side only `where` condition
           val newLeft = leftFilterConditions.
@@ -1213,6 +1232,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
 
           (rightFilterConditions ++ commonFilterCondition).
             reduceLeftOption(And).map(Filter(_, newJoin)).getOrElse(newJoin)
+          // full outer join，不做任何优化
         case FullOuter => f // DO Nothing for Full Outer Join
         case NaturalJoin(_) => sys.error("Untransformed NaturalJoin node")
         case UsingJoin(_, _) => sys.error("Untransformed Using join node")

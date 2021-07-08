@@ -35,11 +35,13 @@ import org.apache.spark.util.io.{ChunkedByteBuffer, ChunkedByteBufferOutputStrea
 
 /**
  * A BitTorrent-like implementation of [[org.apache.spark.broadcast.Broadcast]].
+  * 类似于BitTorrent协议来实现广播：Broadcast。
  *
  * The mechanism is as follows:
  *
  * The driver divides the serialized object into small chunks and
  * stores those chunks in the BlockManager of the driver.
+  * driver端把序列化对象分成多个小的块，并把它们保存到driver端的BlockManager中。
  *
  * On each executor, the executor first attempts to fetch the object from its BlockManager. If
  * it does not exist, it then uses remote fetches to fetch the small chunks from the driver and/or
@@ -111,6 +113,7 @@ private[spark] class TorrentBroadcast[T: ClassTag](obj: T, id: Long)
 
   /**
    * Divide the object into multiple blocks and put those blocks in the block manager.
+    * 把对象分成多个block，并把这些块保存到block manager中。
    *
    * @param value the object to divide
    * @return number of blocks this broadcast variable is divided into

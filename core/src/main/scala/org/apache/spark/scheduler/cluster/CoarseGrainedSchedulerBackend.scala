@@ -83,7 +83,7 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, val rpcEnv: Rp
   // Executors we have requested the cluster manager to kill that have not died yet; maps
   // the executor ID to whether it was explicitly killed by the driver (and thus shouldn't
   // be considered an app-related failure).
-  // 已经向CM请求杀死，但还么有死掉的executors。把executor ID映射到是否被driver杀死的boolan值。
+  // 已经向CM请求杀死，但还没有死掉的executors。把executor ID映射到是否被driver杀死的boolan值。
   @GuardedBy("CoarseGrainedSchedulerBackend.this")
   private val executorsPendingToRemove = new HashMap[String, Boolean]
 

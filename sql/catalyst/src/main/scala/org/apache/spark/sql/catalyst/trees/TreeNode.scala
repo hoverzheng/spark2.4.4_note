@@ -273,6 +273,8 @@ abstract class TreeNode[BaseType <: TreeNode[BaseType]] extends Product {
    * Returns a copy of this node where `rule` has been recursively applied first to all of its
    * children and then itself (post-order). When `rule` does not apply to a given node, it is left
    * unchanged.
+    * 返回此节点的副本，其中 `rule` 首先递归应用于其所有子节点，然后是自身。（树后序遍历）。
+    * 当 `rule` 不适用于给定节点时，它保持不变。
    *
    * @param rule the function use to transform this nodes children
    */

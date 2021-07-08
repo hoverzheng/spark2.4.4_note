@@ -31,6 +31,7 @@ import org.apache.spark.sql.internal.{BaseSessionStateBuilder, SessionResourceLo
 /**
  * Builder that produces a Hive-aware `SessionState`.
  */
+// 构建器，产生一个hive的SessionState
 @Experimental
 @InterfaceStability.Unstable
 class HiveSessionStateBuilder(session: SparkSession, parentState: Option[SessionState] = None)
@@ -41,6 +42,7 @@ class HiveSessionStateBuilder(session: SparkSession, parentState: Option[Session
   /**
    * Create a Hive aware resource loader.
    */
+    // 创建一个Hive的资源加载器。
   override protected lazy val resourceLoader: HiveSessionResourceLoader = {
     new HiveSessionResourceLoader(
       session, () => externalCatalog.unwrapped.asInstanceOf[HiveExternalCatalog].client)
@@ -49,6 +51,7 @@ class HiveSessionStateBuilder(session: SparkSession, parentState: Option[Session
   /**
    * Create a [[HiveSessionCatalog]].
    */
+    // 创建一个hive的session元数据管理对象。
   override protected lazy val catalog: HiveSessionCatalog = {
     val catalog = new HiveSessionCatalog(
       () => externalCatalog,
@@ -91,6 +94,7 @@ class HiveSessionStateBuilder(session: SparkSession, parentState: Option[Session
   /**
    * Planner that takes into account Hive-specific strategies.
    */
+  // 物理计划，需要考虑hive支持的策略
   override protected def planner: SparkPlanner = {
     new SparkPlanner(session.sparkContext, conf, experimentalMethods) with HiveStrategies {
       override val sparkSession: SparkSession = session

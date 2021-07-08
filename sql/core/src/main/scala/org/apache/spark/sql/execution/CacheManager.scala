@@ -33,6 +33,7 @@ import org.apache.spark.storage.StorageLevel
 import org.apache.spark.storage.StorageLevel.MEMORY_AND_DISK
 
 /** Holds a cached logical plan and its data */
+// 保存缓存的逻辑计划和其数据
 case class CachedData(plan: LogicalPlan, cachedRepresentation: InMemoryRelation)
 
 /**
@@ -42,12 +43,15 @@ case class CachedData(plan: LogicalPlan, cachedRepresentation: InMemoryRelation)
  * `sameResult` as the originally cached query.
  *
  * Internal to Spark SQL.
+  *
+  * 在 SQLContext 中为缓存查询结果提供支持，并在执行后续查询时自动使用这些缓存的结果。
+  * 使用存储在 InMemoryRelation 中的字节缓冲区缓存数据。 这个关系是自动替换的查询计划，返回与最初缓存的查询相同的结果。
  */
 class CacheManager extends Logging {
 
   @transient
   private val cachedData = new java.util.LinkedList[CachedData]
-
+  cachedData
   @transient
   private val cacheLock = new ReentrantReadWriteLock
 
@@ -85,21 +89,30 @@ class CacheManager extends Logging {
    * Unlike `RDD.cache()`, the default storage level is set to be `MEMORY_AND_DISK` because
    * recomputing the in-memory columnar representation of the underlying table is expensive.
    */
+  // 缓存由给定 [[Dataset]] 的逻辑表达式产生的数据。
+  // 与 `RDD.cache()` 不同，默认存储级别设置为 `MEMORY_AND_DISK`，因为重新计算基础表内存中的列代价很大。
+  // 注意：cache操作是懒加载的，当计算Dataset时才会计算和缓存数据。另外，判断是否缓存，是根据执行计划来判断的。
   def cacheQuery(
       query: Dataset[_],
       tableName: Option[String] = None,
-      storageLevel: StorageLevel = MEMORY_AND_DISK): Unit = writeLock {
+      storageLevel: StorageLevel = MEMORY_AND_DISK): Unit = writeLock {  // 添加写锁
+    // 获取逻辑计划
     val planToCache = query.logicalPlan
-    if (lookupCachedData(planToCache).nonEmpty) {
+    // 查看是否数据已经缓存了
+    if (lookupCachedData(planToCache).nonEmpty) { // 已经缓存过了
       logWarning("Asked to cache already cached data.")
     } else {
+      // 数据没有缓存
       val sparkSession = query.sparkSession
+      // 创建一个InMemoryRelation对象。
+      // 在创建该对象时，会把逻辑计划转换成物理计划(SparkPlan)并进行优化
       val inMemoryRelation = InMemoryRelation(
         sparkSession.sessionState.conf.useCompression,
         sparkSession.sessionState.conf.columnBatchSize, storageLevel,
         sparkSession.sessionState.executePlan(planToCache).executedPlan,
         tableName,
         planToCache)
+      // 把CachedData添加到cachedData这个列表中
       cachedData.add(CachedData(planToCache, inMemoryRelation))
     }
   }

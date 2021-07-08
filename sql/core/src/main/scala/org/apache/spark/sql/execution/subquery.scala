@@ -30,10 +30,12 @@ import org.apache.spark.sql.types.{BooleanType, DataType, StructType}
 
 /**
  * The base class for subquery that is used in SparkPlan.
+  * subquery的父类，在SparkPlan中使用。
  */
 abstract class ExecSubqueryExpression extends PlanExpression[SubqueryExec] {
   /**
    * Fill the expression with collected result from executed plan.
+    * 用从执行计划中收集的结果填充表达式。
    */
   def updateResult(): Unit
 }
@@ -42,6 +44,8 @@ abstract class ExecSubqueryExpression extends PlanExpression[SubqueryExec] {
  * A subquery that will return only one row and one column.
  *
  * This is the physical copy of ScalarSubquery to be used inside SparkPlan.
+  * 一个子查询，用来返回一行和一列。
+  * 这是一个ScalarSubquery的copy，在SparkPlan内部使用。
  */
 case class ScalarSubquery(
     plan: SubqueryExec,
@@ -135,12 +139,19 @@ case class InSubquery(
 
 /**
  * Plans scalar subqueries from that are present in the given [[SparkPlan]].
+  * 计划来自给定 [[SparkPlan]] 中存在的标量子查询。
+  * PlanSubqueries 是物理查询计划规则准备批次的一部分，
+  * 在为优化的物理查询计划请求 QueryExecution 时执行（即在查询执行的 executePlan 阶段）。
  */
 case class PlanSubqueries(sparkSession: SparkSession) extends Rule[SparkPlan] {
   def apply(plan: SparkPlan): SparkPlan = {
     plan.transformAllExpressions {
       case subquery: expressions.ScalarSubquery =>
+        // 构建一个查询执行器：QueryExecution，这样就会对子查询也进行一遍：
+        // 逻辑计划->分析逻辑计划->优化逻辑计划->物理计划->这个过程，这里取executedPlan的值
+        // 所以回得到一个优化后的物理计划，其实相当于一个递归的过程。
         val executedPlan = new QueryExecution(sparkSession, subquery.plan).executedPlan
+        // 创建一个ScalarSubquery对象
         ScalarSubquery(
           SubqueryExec(s"subquery${subquery.exprId.id}", executedPlan),
           subquery.exprId)

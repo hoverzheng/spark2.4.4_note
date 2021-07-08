@@ -38,6 +38,8 @@ import org.apache.spark.util.{LongAccumulator, Utils}
  * @param numRows The total number of rows in this batch
  * @param buffers The buffers for serialized columns
  * @param stats The stat of columns
+  *
+  * 缓存多行数据
  */
 private[columnar]
 case class CachedBatch(numRows: Int, buffers: Array[Array[Byte]], stats: InternalRow)

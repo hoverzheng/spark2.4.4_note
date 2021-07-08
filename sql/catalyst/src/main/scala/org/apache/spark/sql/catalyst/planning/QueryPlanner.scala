@@ -66,7 +66,7 @@ abstract class QueryPlanner[PhysicalPlan <: TreeNode[PhysicalPlan]] {
 
     // Collect physical plan candidates.
     // 收集和逻辑执行计划plan匹配的物理执行计划的候选者。
-    // 其实就是把逻辑执行计划作为参数传递给物理执行计划对象，由该对象内部进行判断。
+    // 其实就是使用策略类的apply函数来处理逻辑计划的每个节点，返回匹配的物理计划的操作，可能有多个。
     val candidates = strategies.iterator.flatMap(_(plan))
 
     // The candidates may contain placeholders marked as [[planLater]],
@@ -83,7 +83,7 @@ abstract class QueryPlanner[PhysicalPlan <: TreeNode[PhysicalPlan]] {
         placeholders.iterator.foldLeft(Iterator(candidate)) {
           case (candidatesWithPlaceholders, (placeholder, logicalPlan)) =>
             // Plan the logical plan for the placeholder.
-            // 为占位符进行逻辑执行计划的转换
+            // 为占位符进行逻辑计划的转换
             val childPlans = this.plan(logicalPlan)
 
             candidatesWithPlaceholders.flatMap { candidateWithPlaceholders =>

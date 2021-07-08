@@ -25,6 +25,7 @@ import org.apache.spark.sql.execution.datasources.{DataSourceStrategy, FileSourc
 import org.apache.spark.sql.execution.datasources.v2.DataSourceV2Strategy
 import org.apache.spark.sql.internal.SQLConf
 
+// 物理计划生成器
 class SparkPlanner(
     val sparkContext: SparkContext,
     val conf: SQLConf,
@@ -62,6 +63,7 @@ class SparkPlanner(
   override protected def prunePlans(plans: Iterator[SparkPlan]): Iterator[SparkPlan] = {
     // TODO: We will need to prune bad plans when we improve plan space exploration
     //       to prevent combinatorial explosion.
+    // 将会去掉坏的计划，防止组合爆炸的增长。
     plans
   }
 

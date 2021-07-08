@@ -36,6 +36,12 @@ import org.apache.spark.sql.types.StructType
  * Exchanges are the key class of operators that enable parallelism. Although the implementation
  * differs significantly, the concept is similar to the exchange operator described in
  * "Volcano -- An Extensible and Parallel Query Evaluation System" by Goetz Graefe.
+  *
+  * 在多个线程或进程之间交换数据的运算符的基类。
+  *
+  * Exchanges是实现并行性的关键运算符类。
+  * 尽管实现有很大不同，但其概念类似于 Goetz Graefe 在“Volcano -- An Extensible and Parallel Query Evaluation System”中描述的交换运算符。
+  *
  */
 abstract class Exchange extends UnaryExecNode {
   override def output: Seq[Attribute] = child.output
@@ -82,6 +88,7 @@ case class ReusedExchangeExec(override val output: Seq[Attribute], child: Exchan
 /**
  * Find out duplicated exchanges in the spark plan, then use the same exchange for all the
  * references.
+  * 在spark plan中找出重复的交换，然后对所有引用使用相同的交换。
  */
 case class ReuseExchange(conf: SQLConf) extends Rule[SparkPlan] {
 
@@ -90,6 +97,7 @@ case class ReuseExchange(conf: SQLConf) extends Rule[SparkPlan] {
       return plan
     }
     // Build a hash map using schema of exchanges to avoid O(N*N) sameResult calls.
+    // 使用交换模式构建哈希映射以避免 O(N*N) sameResult 调用。
     val exchanges = mutable.HashMap[StructType, ArrayBuffer[Exchange]]()
     plan.transformUp {
       case exchange: Exchange =>

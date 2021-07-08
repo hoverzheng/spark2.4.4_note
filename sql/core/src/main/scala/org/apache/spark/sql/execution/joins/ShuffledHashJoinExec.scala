@@ -28,6 +28,7 @@ import org.apache.spark.sql.execution.metric.SQLMetrics
 
 /**
  * Performs a hash join of two child relations by first shuffling the data using the join keys.
+  * 首先使用join keys对数据进行shuffle，然后再执行两个子关系的hash join。
  */
 case class ShuffledHashJoinExec(
     leftKeys: Seq[Expression],

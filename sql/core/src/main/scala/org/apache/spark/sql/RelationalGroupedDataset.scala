@@ -546,6 +546,7 @@ private[sql] object RelationalGroupedDataset {
   /**
    * To indicate it's the GroupBy
    */
+  // 聚合的类型有多种：
   private[sql] object GroupByType extends GroupType
 
   /**

@@ -110,6 +110,8 @@ object Partitioner {
  * Java arrays have hashCodes that are based on the arrays' identities rather than their contents,
  * so attempting to partition an RDD[Array[_]] or RDD[(Array[_], _)] using a HashPartitioner will
  * produce an unexpected or incorrect result.
+  *
+  * 基于Object.hashCode实现的hash分区器
  */
 class HashPartitioner(partitions: Int) extends Partitioner {
   require(partitions >= 0, s"Number of partitions ($partitions) cannot be negative.")
@@ -117,7 +119,8 @@ class HashPartitioner(partitions: Int) extends Partitioner {
   // 分区总数
   def numPartitions: Int = partitions
 
-  // 给一个key，返回该key对应的分区号。通过计算：key的hashCode%分区数得到的值
+  // 给一个key，返回该key对应的分区号。通过计算：$(key的hashCode)%$(分区数) 得到的值。
+  // 该函数相当于对数据进行了重新分区。
   def getPartition(key: Any): Int = key match {
     case null => 0
     case _ => Utils.nonNegativeMod(key.hashCode, numPartitions)
@@ -131,7 +134,7 @@ class HashPartitioner(partitions: Int) extends Partitioner {
       false
   }
 
-  // 重构hashCode函数的值为分区的数量
+  // 重构分区器的hashCode函数的值为分区的数量
   override def hashCode: Int = numPartitions
 }
 

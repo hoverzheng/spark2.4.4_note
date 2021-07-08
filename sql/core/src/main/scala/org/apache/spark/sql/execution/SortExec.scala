@@ -28,6 +28,7 @@ import org.apache.spark.sql.execution.metric.SQLMetrics
 
 /**
  * Performs (external) sorting.
+  * 执行排序(外部)
  *
  * @param global when true performs a global sort of all partitions by shuffling the data first
  *               if necessary.

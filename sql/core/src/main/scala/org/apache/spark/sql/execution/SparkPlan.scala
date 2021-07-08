@@ -122,8 +122,10 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
   /**
    * Returns the result of this query as an RDD[InternalRow] by delegating to `doExecute` after
    * preparations.
+    * 通过在准备工作之后委托给`doExecute`，将此查询的结果作为 RDD[InternalRow] 返回。
    *
    * Concrete implementations of SparkPlan should override `doExecute`.
+    * 具体的SparkPlan实现时，需要重载函数：doExecute
    */
   final def execute(): RDD[InternalRow] = executeQuery {
     if (isCanonicalizedPlan) {
@@ -148,6 +150,7 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
   /**
    * Executes a query after preparing the query and adding query plan information to created RDDs
    * for visualization.
+    * 在准备好查询后执行一个查询，并且为了可视化添加查询计划信息来创建RDD。
    */
   protected final def executeQuery[T](query: => T): T = {
     RDDOperationScope.withScope(sparkContext, nodeName, false, true) {
@@ -160,12 +163,15 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
   /**
    * List of (uncorrelated scalar subquery, future holding the subquery result) for this plan node.
    * This list is populated by [[prepareSubqueries]], which is called in [[prepare]].
+    * 此计划节点的（不相关标量子查询，未来保存子查询结果）列表。
+    * 该列表由 [[prepareSubqueries]] 填充，在 [[prepare]] 中调用。
    */
   @transient
   private val runningSubqueries = new ArrayBuffer[ExecSubqueryExpression]
 
   /**
    * Finds scalar subquery expressions in this plan node and starts evaluating them.
+    * 在此计划节点中查找标量子查询表达式并开始评估它们。
    */
   protected def prepareSubqueries(): Unit = {
     expressions.foreach {
@@ -190,19 +196,24 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
 
   /**
    * Whether the "prepare" method is called.
+    * 是否prepare方法被调用过?
    */
   private var prepared = false
 
   /**
    * Prepares this SparkPlan for execution. It's idempotent.
+    * 准备此 SparkPlan 以供执行。 它是幂等的。
    */
   final def prepare(): Unit = {
     // doPrepare() may depend on it's children, we should call prepare() on all the children first.
+    // 深度优先遍历，先然儿子节点先执行
     children.foreach(_.prepare())
     synchronized {
       if (!prepared) {
+        // 评估子查询
         prepareSubqueries()
         doPrepare()
+        // prepare只执行一次
         prepared = true
       }
     }
@@ -217,6 +228,10 @@ abstract class SparkPlan extends QueryPlan[SparkPlan] with Logging with Serializ
    * to call children's `prepare` methods.
    *
    * This will only be called once, protected by `this`.
+    * 被 SparkPlan 的具体实现重载。 它保证在 SparkPlan 的任何“执行”之前运行。
+    * 如果我们想在执行查询之前设置一些状态，这会很有帮助，例如，`BroadcastHashJoin` 使用它来异步广播。
+    * 注意：`prepare` 方法已经沿着树向下走，所以实现不必调用孩子的 `prepare` 方法。
+    * 它只会被调用一次，受 `this` 保护。
    */
   protected def doPrepare(): Unit = {}
 

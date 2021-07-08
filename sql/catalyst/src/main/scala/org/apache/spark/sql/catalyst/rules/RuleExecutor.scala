@@ -84,6 +84,7 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
     var curPlan = plan
     val queryExecutionMetrics = RuleExecutor.queryExecutionMeter
 
+    // 遍历每个batch
     batches.foreach { batch =>
       val batchStartPlan = curPlan
       var iteration = 1
@@ -92,7 +93,7 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
 
       // Run until fix point (or the max number of iterations as specified in the strategy.
       while (continue) {
-        // 遍历batch的rule，通过多个rule来处理plan，并得到最终结果
+        // 遍历每个batch的rule，通过多个rule来处理plan(效果叠加)，并得到最终结果
         curPlan = batch.rules.foldLeft(curPlan) {
           case (plan, rule) =>
             val startTime = System.nanoTime()
@@ -143,6 +144,7 @@ abstract class RuleExecutor[TreeType <: TreeNode[_]] extends Logging {
         lastPlan = curPlan
       }
 
+      // 若开始的plan和目前的不相等，说明已经把rule使用到plan上，plan已经改变了
       if (!batchStartPlan.fastEquals(curPlan)) {
         logDebug(
           s"""

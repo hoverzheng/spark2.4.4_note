@@ -179,17 +179,21 @@ private[spark] class Executor(
   private val maxResultSize = conf.get(MAX_RESULT_SIZE)
 
   // Maintains the list of running tasks.
+  // 维护一个Task的列表
   private val runningTasks = new ConcurrentHashMap[Long, TaskRunner]
 
   /**
    * Interval to send heartbeats, in milliseconds
+    * Executor心跳的间隔时间
    */
   private val HEARTBEAT_INTERVAL_MS = conf.get(EXECUTOR_HEARTBEAT_INTERVAL)
 
   // Executor for the heartbeat task.
+  // 心跳任务的线程执行器
   private val heartbeater = ThreadUtils.newDaemonSingleThreadScheduledExecutor("driver-heartbeater")
 
   // must be initialized before running startDriverHeartbeat()
+  // 获取driver端的连接
   private val heartbeatReceiverRef =
     RpcUtils.makeDriverRef(HeartbeatReceiver.ENDPOINT_NAME, conf, env.rpcEnv)
 
@@ -198,17 +202,20 @@ private[spark] class Executor(
    * times, it should kill itself. The default value is 60. It means we will retry to send
    * heartbeats about 10 minutes because the heartbeat interval is 10s.
    */
-    //
+    // 当executor不能向driver发送心跳时，可以重试的最大次数。默认是60.
   private val HEARTBEAT_MAX_FAILURES = conf.getInt("spark.executor.heartbeat.maxFailures", 60)
 
   /**
    * Count the failure times of heartbeat. It should only be accessed in the heartbeat thread. Each
    * successful heartbeat will reset it to 0.
+    * 心跳失败的次数。每次成功后把该变量重置成0.
    */
   private var heartbeatFailures = 0
 
+  // 开启定时向driver端的心跳线程
   startDriverHeartbeater()
 
+  // 目前在在executor中运行的Task数量
   private[executor] def numRunningTasks: Int = runningTasks.size()
 
   def launchTask(context: ExecutorBackend, taskDescription: TaskDescription): Unit = {
@@ -347,6 +354,10 @@ private[spark] class Executor(
      *    1. Report executor runtime and JVM gc time if possible
      *    2. Collect accumulator updates
      *    3. Set the finished flag to true and clear current thread's interrupt status
+      * 工具函数：
+      *  1.汇报executor的运行时间，和JVM gc的时间
+      *  2. 收集accumlator的更新时间
+      *  3. 设置finished标识为true，并请来目前线程的中断状态。
      */
     private def collectAccumulatorsAndResetStatusOnFailure(taskStartTime: Long) = {
       // Report executor runtime and JVM gc time
@@ -844,6 +855,7 @@ private[spark] class Executor(
   }
 
   /** Reports heartbeat and metrics for active tasks to the driver. */
+  // 向driver端汇报心跳信息
   private def reportHeartBeat(): Unit = {
     // list of (task id, accumUpdates) to send back to the driver
     val accumUpdates = new ArrayBuffer[(Long, Seq[AccumulatorV2[_, _]])]()
@@ -857,22 +869,28 @@ private[spark] class Executor(
       }
     }
 
+    // 心跳信息对象
     val message = Heartbeat(executorId, accumUpdates.toArray, env.blockManager.blockManagerId)
     try {
       val response = heartbeatReceiverRef.askSync[HeartbeatResponse](
           message, new RpcTimeout(HEARTBEAT_INTERVAL_MS.millis, EXECUTOR_HEARTBEAT_INTERVAL.key))
+      // 需要重新注册blockmanager。?
       if (response.reregisterBlockManager) {
         logInfo("Told to re-register on heartbeat")
         env.blockManager.reregister()
       }
+      // 心跳成功，重置该变量
       heartbeatFailures = 0
     } catch {
+      // 心跳发送失败
       case NonFatal(e) =>
         logWarning("Issue communicating with driver in heartbeater", e)
         heartbeatFailures += 1
+        // 向driver端的心跳尝试次数大于阈值
         if (heartbeatFailures >= HEARTBEAT_MAX_FAILURES) {
           logError(s"Exit as unable to send heartbeats to driver " +
             s"more than $HEARTBEAT_MAX_FAILURES times")
+          // executor直接退出
           System.exit(ExecutorExitCode.HEARTBEAT_FAILURE)
         }
     }
@@ -880,6 +898,7 @@ private[spark] class Executor(
 
   /**
    * Schedules a task to report heartbeat and partial metrics for active tasks to driver.
+    * 启动一个定时线程来向driver端汇报心跳信息和运行的部分metrics值。
    */
   private def startDriverHeartbeater(): Unit = {
     val intervalMs = HEARTBEAT_INTERVAL_MS

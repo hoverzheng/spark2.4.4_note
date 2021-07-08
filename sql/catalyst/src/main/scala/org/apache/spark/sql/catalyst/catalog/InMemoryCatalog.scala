@@ -198,6 +198,7 @@ class InMemoryCatalog(
       // specify location for managed table. And in [[CreateDataSourceTableAsSelectCommand]] we have
       // to create the table directory and write out data before we create this table, to avoid
       // exposing a partial written table.
+      // 若是一个managed表，且存储位置没有设置，则设置一个默认存储位置
       val needDefaultTableLocation =
         tableDefinition.tableType == CatalogTableType.MANAGED &&
           tableDefinition.storage.locationUri.isEmpty
@@ -205,6 +206,7 @@ class InMemoryCatalog(
       val tableWithLocation = if (needDefaultTableLocation) {
         val defaultTableLocation = new Path(new Path(catalog(db).db.locationUri), table)
         try {
+          // 在默认位置创建一个目录
           val fs = defaultTableLocation.getFileSystem(hadoopConfig)
           fs.mkdirs(defaultTableLocation)
         } catch {

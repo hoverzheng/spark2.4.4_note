@@ -33,12 +33,17 @@ import org.apache.spark.sql.internal.SQLConf
  * [[org.apache.spark.sql.catalyst.plans.physical.Distribution Distribution]] requirements for
  * each operator by inserting [[ShuffleExchangeExec]] Operators where required.  Also ensure that
  * the input partition ordering requirements are met.
+  * 确保输入数据的[[Partitioning]]满足[[Distribution]]的要求，每个操作符通过在需要的地方插入[[ShuffleExchangeExec]]操作符。
+  * 还要确保满足输入分区排序要求。
+  *
  */
 case class EnsureRequirements(conf: SQLConf) extends Rule[SparkPlan] {
+  // 默认的shuffle分区数：当执行聚合或join操作时产生的shuffle操作的分区数。默认为：200
   private def defaultNumPreShufflePartitions: Int = conf.numShufflePartitions
 
   private def targetPostShuffleInputSize: Long = conf.targetPostShuffleInputSize
 
+  // 若为true，则启用adaptive查询计划
   private def adaptiveExecutionEnabled: Boolean = conf.adaptiveExecutionEnabled
 
   private def minNumPostShufflePartitions: Option[Int] = {
@@ -301,7 +306,7 @@ case class EnsureRequirements(conf: SQLConf) extends Rule[SparkPlan] {
     }
   }
 
-  def apply(plan: SparkPlan): SparkPlan = plan.transformUp {
+  def apply(plan: SparkPlan): SparkPlan = plan.transformUp { // 后序遍历所有节点，并使用plan
     // TODO: remove this after we create a physical operator for `RepartitionByExpression`.
     case operator @ ShuffleExchangeExec(upper: HashPartitioning, child, _) =>
       child.outputPartitioning match {

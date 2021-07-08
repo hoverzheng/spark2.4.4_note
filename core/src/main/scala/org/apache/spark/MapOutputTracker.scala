@@ -59,6 +59,7 @@ private class ShuffleStatus(numPartitions: Int) {
    * for each output.
    */
   // Exposed for testing
+  // 使用时必须要进行同步
   val mapStatuses = new Array[MapStatus](numPartitions)
 
   /**
@@ -521,15 +522,22 @@ private[spark] class MapOutputTrackerMaster(
 
   /**
    * Return statistics about all of the outputs for a given shuffle.
+    * 返回所有给定shuffle输出的统计值。
    */
   def getStatistics(dep: ShuffleDependency[_, _, _]): MapOutputStatistics = {
     shuffleStatuses(dep.shuffleId).withMapStatuses { statuses =>
+      // 获取分区数
       val totalSizes = new Array[Long](dep.partitioner.numPartitions)
+      // 多线程时的避免竞争条件，需要改成：后面的操作对应修改。可以查看：/spark/pull/29494
+      //val totalSizes = new Array[AtomicLong](dep.partitioner.numPartitions)
+      // 获取并行合并的阈值, mapper*shuffle partitions
       val parallelAggThreshold = conf.get(
         SHUFFLE_MAP_OUTPUT_PARALLEL_AGGREGATION_THRESHOLD)
+      // 并行度:可用cpu和取最小值
       val parallelism = math.min(
         Runtime.getRuntime.availableProcessors(),
         statuses.length.toLong * totalSizes.length / parallelAggThreshold + 1).toInt
+
       if (parallelism <= 1) {
         for (s <- statuses) {
           for (i <- 0 until totalSizes.length) {
@@ -537,6 +545,8 @@ private[spark] class MapOutputTrackerMaster(
           }
         }
       } else {
+        // 若并行度大于1，用多线程处理
+        // 注意这里有竞争条件totalSizes是非同步变量，多线程时可能两个线程同时设置某个位置的数据。需要改成AtomicLong
         val threadPool = ThreadUtils.newDaemonFixedThreadPool(parallelism, "map-output-aggregate")
         try {
           implicit val executionContext = ExecutionContext.fromExecutor(threadPool)
@@ -710,6 +720,7 @@ private[spark] class MapOutputTrackerWorker(conf: SparkConf) extends MapOutputTr
    * on this array when reading it, because on the driver, we may be changing it in place.
    *
    * (It would be nice to remove this restriction in the future.)
+    * 得到或获取给定shuffleId的MapStatuses数组。
    */
   private def getStatuses(shuffleId: Int): Array[MapStatus] = {
     val statuses = mapStatuses.get(shuffleId).orNull

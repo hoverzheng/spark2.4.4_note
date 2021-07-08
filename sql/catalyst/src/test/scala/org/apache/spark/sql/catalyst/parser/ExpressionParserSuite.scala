@@ -36,7 +36,6 @@ import org.apache.spark.unsafe.types.CalendarInterval
  * CheckAnalysis classes.
  */
 class ExpressionParserSuite extends PlanTest {
-  import CatalystSqlParser._
   import org.apache.spark.sql.catalyst.dsl.expressions._
   import org.apache.spark.sql.catalyst.dsl.plans._
 
@@ -263,7 +262,7 @@ class ExpressionParserSuite extends PlanTest {
     }
 
     // Basic window testing.
-    assertEqual("foo(*) over w1", UnresolvedWindowExpression(func, WindowSpecReference("w1")))
+    assertEqual("Optimizer ", UnresolvedWindowExpression(func, WindowSpecReference("w1")))
     assertEqual("foo(*) over ()", windowed())
     assertEqual("foo(*) over (partition by a, b)", windowed(Seq('a, 'b)))
     assertEqual("foo(*) over (distribute by a, b)", windowed(Seq('a, 'b)))

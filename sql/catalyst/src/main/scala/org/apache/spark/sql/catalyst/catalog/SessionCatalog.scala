@@ -93,6 +93,7 @@ class SessionCatalog(
   lazy val globalTempViewManager = globalTempViewManagerBuilder()
 
   /** List of temporary views, mapping from table name to their logical plan. */
+  // 临时视图都保存到sessionState的一个hashmap中
   @GuardedBy("this")
   protected val tempViews = new mutable.HashMap[String, LogicalPlan]
 
@@ -122,6 +123,7 @@ class SessionCatalog(
   /**
    * Format table name, taking into account case sensitivity.
    */
+  // 默认表名不区分大小写
   protected[this] def formatTableName(name: String): String = {
     if (conf.caseSensitiveAnalysis) name else name.toLowerCase(Locale.ROOT)
   }
@@ -129,6 +131,7 @@ class SessionCatalog(
   /**
    * Format database name, taking into account case sensitivity.
    */
+  // 默认数据名不区分大小写
   protected[this] def formatDatabaseName(name: String): String = {
     if (conf.caseSensitiveAnalysis) name else name.toLowerCase(Locale.ROOT)
   }
@@ -139,11 +142,13 @@ class SessionCatalog(
   }
 
   /** This method provides a way to get a cached plan. */
+  // 获取已经缓存的逻辑计划
   def getCachedPlan(t: QualifiedTableName, c: Callable[LogicalPlan]): LogicalPlan = {
     tableRelationCache.get(t, c)
   }
 
   /** This method provides a way to get a cached plan if the key exists. */
+  // 获取一个缓存的逻辑计划
   def getCachedTable(key: QualifiedTableName): LogicalPlan = {
     tableRelationCache.getIfPresent(key)
   }
@@ -154,11 +159,13 @@ class SessionCatalog(
   }
 
   /** This method provides a way to invalidate a cached plan. */
+  // 放弃一个缓存的计划
   def invalidateCachedTable(key: QualifiedTableName): Unit = {
     tableRelationCache.invalidate(key)
   }
 
   /** This method provides a way to invalidate all the cached plans. */
+  // 废除所有缓存的逻辑计划
   def invalidateAllCachedTables(): Unit = {
     tableRelationCache.invalidateAll()
   }
@@ -488,14 +495,18 @@ class SessionCatalog(
   /**
    * Create a local temporary view.
    */
+  // 创建本地临时视图
   def createTempView(
       name: String,
       tableDefinition: LogicalPlan,
       overrideIfExists: Boolean): Unit = synchronized {
+    // 创建的临时视图名处理成小写（也就是说，大小写无关）
     val table = formatTableName(name)
+    // 视图名都保存在一个hashmap中，其中key是视图名，value是逻辑计划
     if (tempViews.contains(table) && !overrideIfExists) {
       throw new TempTableAlreadyExistsException(name)
     }
+    // 若是replace，直接覆盖旧的逻辑计划
     tempViews.put(table, tableDefinition)
   }
 

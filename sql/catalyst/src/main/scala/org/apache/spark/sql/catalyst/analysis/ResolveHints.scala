@@ -46,6 +46,14 @@ object ResolveHints {
    * beyond any existing broadcast hints, subquery aliases.
    *
    * This rule must happen before common table expressions.
+    *
+    * 对于广播提示，我们接受“BROADCAST”、“BROADCASTJOIN”和“MAPJOIN”，并且可以在提示中指定一系列关系别名。
+    * 广播提示计划节点将插入到与指定名称匹配的任何关系（没有不同别名）、子查询或公共表表达式之上。
+    *
+    * 提示解析的工作原理是递归遍历查询计划以查找与指定广播别名之一匹配的关系或子查询。
+    * 遍历不会超出任何现有的广播提示、子查询别名。
+    *
+    * 此规则必须发生在公共表表达式之前。
    */
   class ResolveBroadcastHints(conf: SQLConf) extends Rule[LogicalPlan] {
     private val BROADCAST_HINT_NAMES = Set("BROADCAST", "BROADCASTJOIN", "MAPJOIN")
@@ -106,6 +114,9 @@ object ResolveHints {
   /**
    * COALESCE Hint accepts name "COALESCE" and "REPARTITION".
    * Its parameter includes a partition number.
+    *
+    * COALESCE提示，可以接受"COALESCE"和"REPARTITION"
+    * 它的参数是一个分区数。
    */
   object ResolveCoalesceHints extends Rule[LogicalPlan] {
     private val COALESCE_HINT_NAMES = Set("COALESCE", "REPARTITION")
@@ -113,11 +124,11 @@ object ResolveHints {
     def apply(plan: LogicalPlan): LogicalPlan = plan.resolveOperators {
       case h: UnresolvedHint if COALESCE_HINT_NAMES.contains(h.name.toUpperCase(Locale.ROOT)) =>
         val hintName = h.name.toUpperCase(Locale.ROOT)
-        val shuffle = hintName match {
+        val shuffle = hintName match { // 若是repartition是需要进行shuffle操作的,而coalesce操作不需要
           case "REPARTITION" => true
           case "COALESCE" => false
         }
-        val numPartitions = h.parameters match {
+        val numPartitions = h.parameters match { // 处理操作的参数
           case Seq(IntegerLiteral(numPartitions)) =>
             numPartitions
           case Seq(numPartitions: Int) =>

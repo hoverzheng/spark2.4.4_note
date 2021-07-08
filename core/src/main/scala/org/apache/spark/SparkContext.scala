@@ -19,27 +19,18 @@ package org.apache.spark
 
 import java.io._
 import java.net.URI
-import java.util.{Arrays, Locale, Properties, ServiceLoader, UUID}
-import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap}
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicInteger, AtomicReference}
-
-import scala.collection.JavaConverters._
-import scala.collection.Map
-import scala.collection.generic.Growable
-import scala.collection.mutable.HashMap
-import scala.language.implicitConversions
-import scala.reflect.{classTag, ClassTag}
-import scala.util.control.NonFatal
+import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap}
+import java.util.{Arrays, Locale, Properties, ServiceLoader, UUID}
 
 import com.google.common.collect.MapMaker
 import org.apache.commons.lang3.SerializationUtils
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.hadoop.io.{ArrayWritable, BooleanWritable, BytesWritable, DoubleWritable, FloatWritable, IntWritable, LongWritable, NullWritable, Text, Writable}
-import org.apache.hadoop.mapred.{FileInputFormat, InputFormat, JobConf, SequenceFileInputFormat, TextInputFormat}
-import org.apache.hadoop.mapreduce.{InputFormat => NewInputFormat, Job => NewHadoopJob}
+import org.apache.hadoop.io._
+import org.apache.hadoop.mapred.{Utils => _, _}
 import org.apache.hadoop.mapreduce.lib.input.{FileInputFormat => NewFileInputFormat}
-
+import org.apache.hadoop.mapreduce.{InputFormat => NewInputFormat, Job => NewHadoopJob}
 import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.deploy.{LocalSparkCluster, SparkHadoopUtil}
@@ -51,14 +42,22 @@ import org.apache.spark.partial.{ApproximateEvaluator, PartialResult}
 import org.apache.spark.rdd._
 import org.apache.spark.rpc.RpcEndpointRef
 import org.apache.spark.scheduler._
-import org.apache.spark.scheduler.cluster.{CoarseGrainedSchedulerBackend, StandaloneSchedulerBackend}
+import org.apache.spark.scheduler.cluster.StandaloneSchedulerBackend
 import org.apache.spark.scheduler.local.LocalSchedulerBackend
 import org.apache.spark.status.AppStatusStore
 import org.apache.spark.status.api.v1.ThreadStackTrace
-import org.apache.spark.storage._
 import org.apache.spark.storage.BlockManagerMessages.TriggerThreadDump
+import org.apache.spark.storage._
 import org.apache.spark.ui.{ConsoleProgressBar, SparkUI}
 import org.apache.spark.util._
+
+import scala.collection.JavaConverters._
+import scala.collection.Map
+import scala.collection.generic.Growable
+import scala.collection.mutable.HashMap
+import scala.language.implicitConversions
+import scala.reflect.{ClassTag, classTag}
+import scala.util.control.NonFatal
 
 /**
  * Main entry point for Spark functionality. A SparkContext represents the connection to a Spark
@@ -489,7 +488,7 @@ class SparkContext(config: SparkConf) extends Logging {
 
     // We need to register "HeartbeatReceiver" before "createTaskScheduler" because Executor will
     // retrieve "HeartbeatReceiver" in the constructor. (SPARK-6640)
-    // 注册一个心跳的接受者的RPC监听？这是什么心跳？
+    // 注册一个心跳的接受者的RPC监听？接受来自Executor的心跳信息。
     _heartbeatReceiver = env.rpcEnv.setupEndpoint(
       HeartbeatReceiver.ENDPOINT_NAME, new HeartbeatReceiver(this))
 
@@ -2712,9 +2711,11 @@ object SparkContext extends Logging {
       if (threads == "*") Runtime.getRuntime.availableProcessors() else threads.toInt
     }
     master match {
+      // 若master是local，默认为1
       case "local" => 1
       case SparkMasterRegex.LOCAL_N_REGEX(threads) => convertToInt(threads)
       case SparkMasterRegex.LOCAL_N_FAILURES_REGEX(threads, _) => convertToInt(threads)
+      // 若是yarn模式，默认为0
       case "yarn" =>
         if (conf != null && conf.getOption("spark.submit.deployMode").contains("cluster")) {
           conf.getInt("spark.driver.cores", 0)

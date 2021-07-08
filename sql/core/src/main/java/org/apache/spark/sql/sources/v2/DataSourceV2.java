@@ -25,6 +25,9 @@ import org.apache.spark.annotation.InterfaceStability;
  * Note that this is an empty interface. Data source implementations should mix-in at least one of
  * the plug-in interfaces like {@link ReadSupport} and {@link WriteSupport}. Otherwise it's just
  * a dummy data source which is un-readable/writable.
+ *
+ * 数据源v2的基础接管口。必须是一个公共的，没有变量的构造函数。
+ *
  */
 @InterfaceStability.Evolving
 public interface DataSourceV2 {}

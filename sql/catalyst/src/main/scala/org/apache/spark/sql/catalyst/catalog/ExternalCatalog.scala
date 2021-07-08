@@ -17,7 +17,7 @@
 
 package org.apache.spark.sql.catalyst.catalog
 
-import org.apache.spark.sql.catalyst.analysis.{FunctionAlreadyExistsException, NoSuchDatabaseException, NoSuchFunctionException, NoSuchPartitionException, NoSuchTableException}
+import org.apache.spark.sql.catalyst.analysis.{FunctionAlreadyExistsException, NoSuchDatabaseException, NoSuchFunctionException, NoSuchTableException}
 import org.apache.spark.sql.catalyst.expressions.Expression
 import org.apache.spark.sql.types.StructType
 
@@ -29,10 +29,9 @@ import org.apache.spark.sql.types.StructType
  * can be accessed in multiple threads. This is an external catalog because it is expected to
  * interact with external systems.
   * 它仅用于非临时项目，并且实现必须是线程安全的，因为它们可以在多个线程中进行访问。
-  * 这是一个外部元数据，因为它需要与外部系统交互。
-  *
+  * 这是一个外部元数据存储对象，因为它需要与外部系统交互。
  *
- * Implementations should throw [[NoSuchDatabaseException]] when databases don't exist.
+ * Immentations should throw [[NoSuchDatabaseException]] when databases don't exist.
  */
 trait ExternalCatalog {
   import CatalogTypes.TablePartitionSpec

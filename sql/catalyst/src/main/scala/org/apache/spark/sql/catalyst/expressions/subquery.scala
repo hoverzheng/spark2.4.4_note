@@ -240,9 +240,11 @@ object SubExprUtils extends PredicateHelper {
 /**
  * A subquery that will return only one row and one column. This will be converted into a physical
  * scalar subquery during planning.
+  * 一个子查询(subquery)，它会返回一行或一列。在计划转换时，它将会被转换成一个物理scalar子查询。
  *
  * Note: `exprId` is used to have a unique name in explain string output.
- */
+  * `exprId`，是解释输出时一个唯一值的名称。
+  */
 case class ScalarSubquery(
     plan: LogicalPlan,
     children: Seq[Expression] = Seq.empty,

@@ -287,6 +287,7 @@ class Analyzer(
         if child.resolved && groupByOpt.isDefined && hasUnresolvedAlias(groupByOpt.get) =>
         Pivot(Some(assignAliases(groupByOpt.get)), pivotColumn, pivotValues, aggregates, child)
 
+      // 若是投射，比如：select
       case Project(projectList, child) if child.resolved && hasUnresolvedAlias(projectList) =>
         Project(assignAliases(projectList), child)
     }
@@ -700,6 +701,7 @@ class Analyzer(
               s"avoid errors. Increase the value of ${SQLConf.MAX_NESTED_VIEW_DEPTH.key} to work " +
               "around this.")
           }
+          // 对儿子节点的逻辑计划进行分析
           executeSameContext(child)
         }
         view.copy(child = newChild)
@@ -759,6 +761,7 @@ class Analyzer(
    * Replaces [[UnresolvedAttribute]]s with concrete [[AttributeReference]]s from
    * a logical plan node's children.
    */
+  // 使用具体的AttributeReference来代替UnresolvedAttribute标识
   object ResolveReferences extends Rule[LogicalPlan] {
     /**
      * Generate a new logical plan for the right child with different expression IDs
@@ -906,9 +909,11 @@ class Analyzer(
       case p: LogicalPlan if !p.childrenResolved => p
 
       // If the projection list contains Stars, expand it.
+      // 若列中包含*，则扩展它。比如：select * ，count(*)，t2.*等等
       case p: Project if containsStar(p.projectList) =>
         p.copy(projectList = buildExpandedProjectList(p.projectList, p.child))
       // If the aggregate function argument contains Stars, expand it.
+      // 若聚合函数的变量中包含*，则扩展它
       case a: Aggregate if containsStar(a.aggregateExpressions) =>
         if (a.groupingExpressions.exists(_.isInstanceOf[UnresolvedOrdinal])) {
           failAnalysis(
@@ -1464,12 +1469,15 @@ class Analyzer(
     /**
      * Resolve and rewrite all subqueries in an operator tree..
      */
+    // 分析并重写子查询表达式
     def apply(plan: LogicalPlan): LogicalPlan = plan.resolveOperatorsUp {
       // In case of HAVING (a filter after an aggregate) we use both the aggregate and
       // its child for resolution.
+      // 在 HAVING（聚合后的过滤器）的情况下，我们同时使用聚合及其子项进行解析。
       case f @ Filter(_, a: Aggregate) if f.childrenResolved =>
         resolveSubQueries(f, Seq(a, a.child))
       // Only a few unary nodes (Project/Filter/Aggregate) can contain subqueries.
+      // 仅仅有单儿子节点的逻辑计划可能包含子查询节点。例如：Project,Filter,Aggregate
       case q: UnaryNode if q.childrenResolved =>
         resolveSubQueries(q, q.children)
     }
@@ -2524,6 +2532,8 @@ class Analyzer(
 /**
  * Removes [[SubqueryAlias]] operators from the plan. Subqueries are only required to provide
  * scoping information for attributes and can be removed once analysis is complete.
+  * 从计划中删除 [[SubqueryAlias]] 运算符。
+  * 子查询只需要为属性提供范围信息，并且可以在分析完成后删除。
  */
 object EliminateSubqueryAliases extends Rule[LogicalPlan] {
   // This is also called in the beginning of the optimization phase, and as a result

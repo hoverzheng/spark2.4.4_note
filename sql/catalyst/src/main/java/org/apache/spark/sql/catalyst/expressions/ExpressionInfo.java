@@ -20,6 +20,7 @@ package org.apache.spark.sql.catalyst.expressions;
 /**
  * Expression information, will be used to describe a expression.
  */
+// 表达式信息，用来描述一个表达式
 public class ExpressionInfo {
     private String className;
     private String usage;

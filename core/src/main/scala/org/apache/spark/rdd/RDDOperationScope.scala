@@ -77,6 +77,8 @@ private[spark] class RDDOperationScope(
 /**
  * A collection of utility methods to construct a hierarchical representation of RDD scopes.
  * An RDD scope tracks the series of operations that created a given RDD.
+  * 一组实用方法，用于构建 RDD视图的分层表示。
+  * RDD 作用域跟踪创建给定 RDD的一系列操作。
  */
 private[spark] object RDDOperationScope extends Logging {
   private val jsonMapper = new ObjectMapper().registerModule(DefaultScalaModule)

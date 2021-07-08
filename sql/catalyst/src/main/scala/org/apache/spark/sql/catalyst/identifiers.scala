@@ -92,9 +92,11 @@ object TableIdentifier {
  * Identifies a function in a database.
  * If `database` is not defined, the current database is used.
  */
+// 函数标识符
 case class FunctionIdentifier(funcName: String, database: Option[String])
   extends IdentifierWithDatabase {
 
+  // 函数的标识是一个字符串
   override val identifier: String = funcName
 
   def this(funcName: String) = this(funcName, None)
@@ -102,6 +104,7 @@ case class FunctionIdentifier(funcName: String, database: Option[String])
   override def toString: String = unquotedString
 }
 
+// 用来标识数据的一个函数
 object FunctionIdentifier {
   def apply(funcName: String): FunctionIdentifier = new FunctionIdentifier(funcName)
 }

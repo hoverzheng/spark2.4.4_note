@@ -34,6 +34,10 @@ import org.apache.spark.util.random.RandomSampler
  *
  * Rules can pattern-match on this node in order to apply transformations that only take effect
  * at the top of the logical query plan.
+  *
+  * 在计划 take() 或 collect() 操作时，此特殊节点会在调用查询计划程序之前插入到逻辑计划的顶部。
+  * 规则可以在此节点上进行模式匹配，以便使用仅在逻辑查询计划顶部生效的转换操作。
+  *
  */
 case class ReturnAnswer(child: LogicalPlan) extends UnaryNode {
   override def output: Seq[Attribute] = child.output
@@ -938,6 +942,8 @@ case class Repartition(numPartitions: Int, shuffle: Boolean, child: LogicalPlan)
  * distribution is expected by the consumer of the query result. Use [[Repartition]] for RDD-like
  * `coalesce` and `repartition`.
  */
+// 此方法使用 [[Expression]] 将数据重新分区为 `numPartitions`，并在执行期间接收有关分区数的信息。
+// 当查询结果的使用者期望特定的排序或分布时使用。 将 [[Repartition]] 用于类似 RDD 的 `coalesce` 和 `repartition`。
 case class RepartitionByExpression(
     partitionExpressions: Seq[Expression],
     child: LogicalPlan,

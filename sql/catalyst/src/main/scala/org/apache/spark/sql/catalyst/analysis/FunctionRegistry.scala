@@ -42,6 +42,7 @@ import org.apache.spark.sql.types._
  *   2) the database name is always case-sensitive here, callers are responsible to
  *      format the database name w.r.t. case-sensitive config.
  */
+// 元数据，用来查找注册的UDF函数
 trait FunctionRegistry {
 
   final def registerFunction(name: FunctionIdentifier, builder: FunctionBuilder): Unit = {
@@ -56,6 +57,7 @@ trait FunctionRegistry {
     builder: FunctionBuilder): Unit
 
   /* Create or replace a temporary function. */
+  // 创建或替换一个临时的函数
   final def createOrReplaceTempFunction(name: String, builder: FunctionBuilder): Unit = {
     registerFunction(
       FunctionIdentifier(name),

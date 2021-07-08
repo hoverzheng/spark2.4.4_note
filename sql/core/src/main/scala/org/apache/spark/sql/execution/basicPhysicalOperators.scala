@@ -634,6 +634,7 @@ object CoalesceExec {
 
 /**
  * Physical plan for a subquery.
+  * subquery的物理计划。
  */
 case class SubqueryExec(name: String, child: SparkPlan) extends UnaryExecNode {
 

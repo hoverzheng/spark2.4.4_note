@@ -32,6 +32,7 @@ import org.apache.spark.util.collection.BitSet
 
 /**
  * Performs a sort merge join of two child relations.
+  * 执行两个子关系的排序合并连接。
  */
 case class SortMergeJoinExec(
     leftKeys: Seq[Expression],

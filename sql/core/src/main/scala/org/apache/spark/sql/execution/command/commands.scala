@@ -36,6 +36,7 @@ import org.apache.spark.sql.types._
 /**
  * A logical command that is executed for its side-effects.  `RunnableCommand`s are
  * wrapped in `ExecutedCommand` during execution.
+  * 为其副作用执行的逻辑命令。 `RunnableCommand`s 在执行过程中被包裹在 `ExecutedCommand` 中。
  */
 trait RunnableCommand extends Command {
 

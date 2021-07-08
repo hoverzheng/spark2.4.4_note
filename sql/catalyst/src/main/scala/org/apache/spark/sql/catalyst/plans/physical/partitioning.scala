@@ -155,6 +155,8 @@ case class BroadcastDistribution(mode: BroadcastMode) extends Distribution {
  * Describes how an operator's output is split across partitions. It has 2 major properties:
  *   1. number of partitions.
  *   2. if it can satisfy a given distribution.
+  * 描述一个操作的输出是如何根据分区进行划分的。它有两个主要的属性：
+  * (1)分区数 (2)是否它满足一个给定的分布
  */
 trait Partitioning {
   /** Returns the number of partitions that the data is split across */

@@ -147,12 +147,23 @@ object ReorderJoin extends Rule[LogicalPlan] with PredicateHelper {
  * - full outer -> right outer if only the right side has such predicates
  *
  * This rule should be executed before pushing down the Filter
+  *
+  * 消除外连接：如果谓词可以限制结果集，这样就可以消除所有提供空值的行。
+  * - full outer -> inner，如果双方都有这样的谓词
+  * - left outer -> inner，如果右侧有这样的谓词
+  * - right outer -> inner，如果左侧有这样的谓词
+  * - full outer -> left outer，如果只有左侧有这样的谓词
+  * - full outer -> right outer，如果只有右侧有这样的谓词
+  *
+  * 这个规则应该在下推Filter操作之前执行。
+  *
  */
 object EliminateOuterJoin extends Rule[LogicalPlan] with PredicateHelper {
 
   /**
    * Returns whether the expression returns null or false when all inputs are nulls.
    */
+  // 返回是否表达式返回null，否则当所有输入都为null，返回false
   private def canFilterOutNull(e: Expression): Boolean = {
     if (!e.deterministic || SubqueryExpression.hasCorrelatedSubquery(e)) return false
     val attributes = e.references.toSeq
