@@ -451,6 +451,7 @@ object LimitPushDown extends Rule[LogicalPlan] {
     // pushdown Limit through it. Once we add UNION DISTINCT, however, we will not be able to
     // pushdown Limit.
     case LocalLimit(exp, Union(children)) =>
+      // 先进行Union操作，然后是limit操作
       LocalLimit(exp, Union(children.map(maybePushLocalLimit(exp, _))))
     // Add extra limits below OUTER JOIN. For LEFT OUTER and RIGHT OUTER JOIN we push limits to
     // the left and right sides, respectively. It's not safe to push limits below FULL OUTER
@@ -460,6 +461,7 @@ object LimitPushDown extends Rule[LogicalPlan] {
     //   - If one side is already limited, stack another limit on top if the new limit is smaller.
     //     The redundant limit will be collapsed by the CombineLimits rule.
     case LocalLimit(exp, join @ Join(left, right, joinType, _)) =>
+      // 先是Join操作，然后是limit操作
       val newJoin = joinType match {
         case RightOuter => join.copy(right = maybePushLocalLimit(exp, right))
         case LeftOuter => join.copy(left = maybePushLocalLimit(exp, left))
@@ -667,12 +669,14 @@ object ColumnPruning extends Rule[LogicalPlan] {
 object CollapseProject extends Rule[LogicalPlan] {
 
   def apply(plan: LogicalPlan): LogicalPlan = plan transformUp {
+    // 若其子节点是select操作
     case p1 @ Project(_, p2: Project) =>
       if (haveCommonNonDeterministicOutput(p1.projectList, p2.projectList)) {
         p1
       } else {
         p2.copy(projectList = buildCleanedProjectList(p1.projectList, p2.projectList))
       }
+    // 若agg操作
     case p @ Project(_, agg: Aggregate) =>
       if (haveCommonNonDeterministicOutput(p.projectList, agg.aggregateExpressions)) {
         p
@@ -868,6 +872,7 @@ object CombineUnions extends Rule[LogicalPlan] {
  * Combines two adjacent [[Filter]] operators into one, merging the non-redundant conditions into
  * one conjunctive predicate.
  */
+// 将两个相邻的 [[Filter]] 运算符合并为一个，将非冗余条件合并为一个连接谓词。
 object CombineFilters extends Rule[LogicalPlan] with PredicateHelper {
   def apply(plan: LogicalPlan): LogicalPlan = plan transform {
     // The query execution/optimization does not guarantee the expressions are evaluated in order.
@@ -962,7 +967,7 @@ object PruneFilters extends Rule[LogicalPlan] with PredicateHelper {
  *
  * This heuristic is valid assuming the expression evaluation cost is minimal.
   *
-  * 通过多个运算符推送[[Filter]]运算符 iff：
+  * 把Filter操作推送到多个操作中，但需要满足以下条件：
   *  1) 运算符是确定性的
   *  2) 谓词是确定性的，运算符不会更改任何行的数据。
   *
@@ -977,6 +982,7 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
     // matters for non-deterministic expressions, while pushing down predicates changes the order.
     // This also applies to Aggregate.
     case Filter(condition, project @ Project(fields, grandChild))
+      // 先是select操作，后接过滤操作
       if fields.forall(_.deterministic) && canPushThroughCondition(grandChild, condition) =>
 
       // Create a map of Aliases to their values from the child projection.
@@ -988,6 +994,7 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
       project.copy(child = Filter(replaceAlias(condition, aliasMap), grandChild))
 
     case filter @ Filter(condition, aggregate: Aggregate)
+      // 先进行聚合操作，再进行过滤操作
       if aggregate.aggregateExpressions.forall(_.deterministic)
         && aggregate.groupingExpressions.nonEmpty =>
       // Find all the aliased expressions in the aggregate list that don't include any actual
@@ -1025,6 +1032,7 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
     // 1. All the expressions are part of window partitioning key. The expressions can be compound.
     // 2. Deterministic.
     // 3. Placed before any non-deterministic predicates.
+      // 先是window操作，然后是过滤操作
     case filter @ Filter(condition, w: Window)
       if w.partitionSpec.forall(_.isInstanceOf[AttributeReference]) =>
       val partitionAttrs = AttributeSet(w.partitionSpec.flatMap(_.references))
@@ -1046,6 +1054,7 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
         filter
       }
 
+      // 先是Union操作，然后是过滤操作
     case filter @ Filter(condition, union: Union) =>
       // Union could change the rows, so non-deterministic predicate can't be pushed down
       val (pushDown, stayUp) = splitConjunctivePredicates(condition).partition(_.deterministic)
@@ -1072,6 +1081,7 @@ object PushDownPredicate extends Rule[LogicalPlan] with PredicateHelper {
       }
 
     case filter @ Filter(condition, watermark: EventTimeWatermark) =>
+      // 先watermark时间操作，再进行过滤操作
       val (pushDown, stayUp) = splitConjunctivePredicates(condition).partition { p =>
         p.deterministic && !p.references.contains(watermark.eventTime)
       }
@@ -1189,6 +1199,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
 
   def apply(plan: LogicalPlan): LogicalPlan = plan transform {
     // push the where condition down into join filter
+    // 把where条件下推到join的过滤条件中
     case f @ Filter(filterCondition, Join(left, right, joinType, joinCondition)) =>
       val (leftFilterConditions, rightFilterConditions, commonFilterCondition) =
         split(splitConjunctivePredicates(filterCondition), left, right)
@@ -1196,6 +1207,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
           // inner join
         case _: InnerLike =>
           // push down the single side `where` condition into respective sides
+          // 将单边的where条件下推到两边
           val newLeft = leftFilterConditions.
             reduceLeftOption(And).map(Filter(_, left)).getOrElse(left)
           val newRight = rightFilterConditions.
@@ -1224,6 +1236,7 @@ object PushPredicateThroughJoin extends Rule[LogicalPlan] with PredicateHelper {
           // left outer join
         case LeftOuter | LeftExistence(_) =>
           // push down the left side only `where` condition
+          // 把where条件下推到左侧（左侧是保留行表）
           val newLeft = leftFilterConditions.
             reduceLeftOption(And).map(Filter(_, left)).getOrElse(left)
           val newRight = right

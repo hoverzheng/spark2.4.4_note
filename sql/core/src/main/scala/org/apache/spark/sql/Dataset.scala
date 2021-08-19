@@ -78,6 +78,7 @@ private[sql] object Dataset {
     val qe = sparkSession.sessionState.executePlan(logicalPlan)
     // 判断逻辑计划是否已经
     qe.assertAnalyzed()
+    // 创建一个dataframe
     new Dataset[Row](sparkSession, qe, RowEncoder(qe.analyzed.schema))
   }
 }
@@ -634,17 +635,21 @@ class Dataset[T] private[sql](
    *                           the caching subsystem
    */
   private def checkpoint(eager: Boolean, reliableCheckpoint: Boolean): Dataset[T] = {
+    // 计算rdd的值
     val internalRdd = queryExecution.toRdd.map(_.copy())
+    // 默认使用可靠的checkpoint机制。使用外部存储，也就是hdfs来存储RDD数据
     if (reliableCheckpoint) {
       internalRdd.checkpoint()
     } else {
       internalRdd.localCheckpoint()
     }
 
+    // 默认是启动用来计算count
     if (eager) {
       internalRdd.count()
     }
 
+    // 得到优化后的物理执行计划
     val physicalPlan = queryExecution.executedPlan
 
     // Takes the first leaf partitioning whenever we see a `PartitioningCollection`. Otherwise the

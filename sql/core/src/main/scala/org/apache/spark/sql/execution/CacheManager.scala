@@ -49,6 +49,7 @@ case class CachedData(plan: LogicalPlan, cachedRepresentation: InMemoryRelation)
  */
 class CacheManager extends Logging {
 
+  // 这里数据结构可以优化，LinkedList查找起来很慢？
   @transient
   private val cachedData = new java.util.LinkedList[CachedData]
   cachedData
@@ -102,7 +103,7 @@ class CacheManager extends Logging {
     if (lookupCachedData(planToCache).nonEmpty) { // 已经缓存过了
       logWarning("Asked to cache already cached data.")
     } else {
-      // 数据没有缓存
+      // 数据没有缓存，先获取sparksession对象
       val sparkSession = query.sparkSession
       // 创建一个InMemoryRelation对象。
       // 在创建该对象时，会把逻辑计划转换成物理计划(SparkPlan)并进行优化
@@ -221,6 +222,7 @@ class CacheManager extends Logging {
   }
 
   /** Optionally returns cached data for the given [[LogicalPlan]]. */
+  // 判断参数中的plan，在已cached的列表中查找和它相等的计划，然后返回CachedData
   def lookupCachedData(plan: LogicalPlan): Option[CachedData] = readLock {
     cachedData.asScala.find(cd => plan.sameResult(cd.plan))
   }

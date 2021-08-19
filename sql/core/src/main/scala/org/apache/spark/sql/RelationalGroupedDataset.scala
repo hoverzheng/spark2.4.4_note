@@ -45,6 +45,7 @@ import org.apache.spark.sql.types.{NumericType, StructType}
  *
  * @since 2.0.0
  */
+// 一套用来对DataFrame进行聚合的方法
 @InterfaceStability.Stable
 class RelationalGroupedDataset protected[sql](
     df: DataFrame,

@@ -35,6 +35,7 @@ class CollapseProjectSuite extends PlanTest {
 
   val testRelation = LocalRelation('a.int, 'b.int)
 
+  // 合并两个确定，且相互独立的列
   test("collapse two deterministic, independent projects into one") {
     val query = testRelation
       .select(('a + 1).as('a_plus_1), 'b)
@@ -46,6 +47,7 @@ class CollapseProjectSuite extends PlanTest {
     comparePlans(optimized, correctAnswer)
   }
 
+  // 合并两个确定，且相互依赖的列
   test("collapse two deterministic, dependent projects into one") {
     val query = testRelation
       .select(('a + 1).as('a_plus_1), 'b)
@@ -60,6 +62,7 @@ class CollapseProjectSuite extends PlanTest {
     comparePlans(optimized, correctAnswer)
   }
 
+  // 不合并不确定的列
   test("do not collapse nondeterministic projects") {
     val query = testRelation
       .select(Rand(10).as('rand))
@@ -71,6 +74,7 @@ class CollapseProjectSuite extends PlanTest {
     comparePlans(optimized, correctAnswer)
   }
 
+  // 合并两个不确定，独立的列
   test("collapse two nondeterministic, independent projects into one") {
     val query = testRelation
       .select(Rand(10).as('rand))
@@ -84,6 +88,7 @@ class CollapseProjectSuite extends PlanTest {
     comparePlans(optimized, correctAnswer)
   }
 
+  // 合并一个不确定，一个确定，且相互独立的列
   test("collapse one nondeterministic, one deterministic, independent projects into one") {
     val query = testRelation
       .select(Rand(10).as('rand), 'a)
@@ -97,6 +102,7 @@ class CollapseProjectSuite extends PlanTest {
     comparePlans(optimized, correctAnswer)
   }
 
+  // 合并列到聚合操作的逻辑计划中
   test("collapse project into aggregate") {
     val query = testRelation
       .groupBy('a, 'b)(('a + 1).as('a_plus_1), 'b)
@@ -110,6 +116,7 @@ class CollapseProjectSuite extends PlanTest {
     comparePlans(optimized, correctAnswer)
   }
 
+  // 不合并一般情况不确定的列和聚合
   test("do not collapse common nondeterministic project and aggregate") {
     val query = testRelation
       .groupBy('a)('a, Rand(10).as('rand))

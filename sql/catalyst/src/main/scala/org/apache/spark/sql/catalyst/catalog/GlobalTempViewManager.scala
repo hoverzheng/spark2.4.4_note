@@ -53,6 +53,7 @@ class GlobalTempViewManager(val database: String) {
    * Creates a global temp view, or issue an exception if the view already exists and
    * `overrideIfExists` is false.
    */
+  // 把创建view的逻辑计划，保存到一个hashmap中
   def create(
       name: String,
       viewDefinition: LogicalPlan,
@@ -66,6 +67,7 @@ class GlobalTempViewManager(val database: String) {
   /**
    * Updates the global temp view if it exists, returns true if updated, false otherwise.
    */
+  // 更新temp view的创建逻辑计划
   def update(
       name: String,
       viewDefinition: LogicalPlan): Boolean = synchronized {
@@ -89,6 +91,7 @@ class GlobalTempViewManager(val database: String) {
    * issue an exception if the source view exists but the destination view already exists. Returns
    * true if renamed, false otherwise.
    */
+  // 修改view的名称
   def rename(oldName: String, newName: String): Boolean = synchronized {
     if (viewDefinitions.contains(oldName)) {
       if (viewDefinitions.contains(newName)) {

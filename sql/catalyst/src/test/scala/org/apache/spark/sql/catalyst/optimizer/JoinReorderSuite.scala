@@ -126,7 +126,7 @@ class JoinReorderSuite extends PlanTest with StatsEstimationTestBase {
       t1.join(t3, Inner, Some(nameToAttr("t1.v-1-10") === nameToAttr("t3.v-1-100")))
         .join(t2, Inner, Some(nameToAttr("t1.k-1-2") === nameToAttr("t2.k-1-5")))
         .select(outputsOf(t1, t2, t3): _*)
-  
+
     assertEqualPlans(originalPlan, bestPlan)
   }
 

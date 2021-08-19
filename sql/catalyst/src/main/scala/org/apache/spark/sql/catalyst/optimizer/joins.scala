@@ -98,8 +98,9 @@ object ReorderJoin extends Rule[LogicalPlan] with PredicateHelper {
 
   def apply(plan: LogicalPlan): LogicalPlan = plan transform {
     case p @ ExtractFiltersAndInnerJoins(input, conditions)
+        // 输入大于，过滤条件不为空
         if input.size > 2 && conditions.nonEmpty =>
-      val reordered = if (SQLConf.get.starSchemaDetection && !SQLConf.get.cboEnabled) {
+      val reordered = if (SQLConf.get.starSchemaDetection && !SQLConf.get.cboEnabled) { //是否启用星型模式，且不启用cbo评估
         val starJoinPlan = StarSchemaDetection.reorderStarJoins(input, conditions)
         if (starJoinPlan.nonEmpty) {
           val rest = input.filterNot(starJoinPlan.contains(_))
