@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dbd805c2-7941-43fc-a899-3c7f4685947c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/GlobalTempViewManager.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/catalog/GlobalTempViewManager.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/Optimizer.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/Optimizer.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/joins.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/main/scala/org/apache/spark/sql/catalyst/optimizer/joins.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/optimizer/CollapseProjectSuite.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/optimizer/CollapseProjectSuite.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/optimizer/JoinReorderSuite.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/catalyst/src/test/scala/org/apache/spark/sql/catalyst/optimizer/JoinReorderSuite.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/Dataset.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/Dataset.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/RelationalGroupedDataset.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/RelationalGroupedDataset.scala" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/CacheManager.scala" beforeDir="false" afterPath="$PROJECT_DIR$/sql/core/src/main/scala/org/apache/spark/sql/execution/CacheManager.scala" afterDir="false" />
-    </list>
+    <list default="true" id="dbd805c2-7941-43fc-a899-3c7f4685947c" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/classes/" />
     <ignored path="$PROJECT_DIR$/launcher/target/" />
     <ignored path="$PROJECT_DIR$/tools/target/" />
@@ -304,6 +294,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -320,8 +312,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -826,11 +816,12 @@
       <workItem from="1629269879876" duration="7423000" />
       <workItem from="1629331668971" duration="9000" />
       <workItem from="1629342056318" duration="61000" />
+      <workItem from="1629342131937" duration="624000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1823884000" />
+    <option name="totallyTimeSpent" value="1824508000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1309,6 +1300,7 @@
             <option name="proportions">
               <list>
                 <option value="0.16224189" />
+                <option value="0.6" />
               </list>
             </option>
           </splitter-proportions>
