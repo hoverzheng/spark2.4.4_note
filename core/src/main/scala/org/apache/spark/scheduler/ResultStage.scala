@@ -41,7 +41,7 @@ private[spark] class ResultStage(
    * The active job for this result stage. Will be empty if the job has already finished
    * (e.g., because the job was cancelled).
    */
-  // 该result stage的ActiveJob。若job已经停止，则该变量为None
+  // 若job已经停止，则activeJob变量为None。
   private[this] var _activeJob: Option[ActiveJob] = None
 
   def activeJob: Option[ActiveJob] = _activeJob
@@ -50,6 +50,7 @@ private[spark] class ResultStage(
     _activeJob = Option(job)
   }
 
+  // 一个ResultStage对应一个_activeJob。删除该_activeJob时，直接设置为None。
   def removeActiveJob(): Unit = {
     _activeJob = None
   }
